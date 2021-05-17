@@ -8,13 +8,14 @@ rm(list=ls())
 # install.packages("pacman") # install multiple package at one time
 pacman::p_load(mlr3, mlr3proba, mlr3pipelines, 
                mlr3learners, mlr3viz,mlr3tuning, 
-               mlr3benchmark, mlr3misc,mlr3extralearners,
+               mlr3benchmark, mlr3misc, mlr3extralearners,
                R6, data.table, lgr, uuid, mlbench, digest, 
                backports, checkmate, paradox, reticulate, 
                keras, devtools, survival, rms, summarytools, knitr) # takes approx 4 mins
 
 install_github("binderh/CoxBoost")
 
+remotes::install_github("mlr-org/mlr3extralearners")
 library(mlr3extralearners)
 install_learners('surv.coxboost') # TODO
 
@@ -119,4 +120,26 @@ summary(surv_probs_Cox, times = 500)
 plot(surv_probs_Cox, col = c("red", "blue", "green"),
      xlab = "Follow-Up Time (days)", ylab = "Survival Probabilities")
 
+task_gbcs = TaskSurv$new(id = "train_gbcs", backend = train_gbcs, time = "survtime", event = "censdead")
+test_gbcs = TaskSurv$new(id = "test_gbcs", backend = test_gbcs, time = "survtime", event = "censdead")
 
+learner.cox = lrn("surv.coxph")
+learner.cox$train(task_gbcs)
+learner.cox$model
+
+prediction.cox = learner.cox$predict(test_gbcs)
+prediction.cox
+prediction.cox$score()
+
+measure = lapply(c("surv.graf"), msr)
+prediction.cox$score(measure)
+
+# SVM
+install_learners('surv.svm')
+svm <- lrn('surv.svm')
+svm$param_set$values = list(gamma.mu = 1)
+svm$train(task_gbcs)
+svm$model
+
+svm.pred <- svm$predict(test_gbcs)
+svm.pred$score()
