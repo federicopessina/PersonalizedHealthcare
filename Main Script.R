@@ -190,3 +190,23 @@ create_autotuner <- function(learner) {
     tuner = tnr("random_search")
   )
 }
+
+# Ranger
+install.packages('ranger')
+library(ranger)
+
+train_gbcs <- gbcs2[train_set, ]
+test_gbcs <- gbcs2[test_set, ]
+
+rf <- ranger(Surv(survtime, censdead) ~ age + menopause + hormone + size + grade1 + grade2 + nodes + prog_recp + estrg_recp,
+             data = train_gbcs, importance = 'impurity')
+rf # Model summary
+importance(rf) # Variable importance
+rf$survival # Survival function for each sample
+rf$chf # Cumulative hazard function for each sample
+
+plot(timepoints(rf), predictions(rf)[1,]) # Plot of surv function for sample 1
+
+1 - rf$prediction.error # Harrell’s C-index on OOB observations
+
+rf.pred <- predict(rf, data = test_gbcs) # Prediction on test data
