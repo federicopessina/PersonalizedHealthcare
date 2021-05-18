@@ -1,5 +1,4 @@
 # Personalized Healthcare Script
-# Personalized Healthcare Script
 
 ##############################################################
 
@@ -20,6 +19,8 @@ remotes::install_github("mlr-org/mlr3extralearners")
 library(mlr3extralearners)
 install_learners('surv.coxboost') # TODO
 
+
+library(mlr3learners) #ranger
 library(mlr3proba) #coxph
 
 ##############################################################
@@ -163,3 +164,12 @@ create_autotuner = function(learner) {
     tuner = tnr("random_search")
   )
 }
+
+install_learners('surv.svm')
+svm <- lrn('surv.svm')
+svm$param_set$values = list(gamma.mu = 1)
+svm$train(task_gbcs)
+svm$model
+
+svm.pred <- svm$predict(test_gbcs)
+svm.pred$score()
