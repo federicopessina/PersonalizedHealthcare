@@ -173,3 +173,20 @@ svm$model
 
 svm.pred <- svm$predict(test_gbcs)
 svm.pred$score()
+
+
+library(mlr3tuning)
+search_space <- ps(
+  ## p_dbl for numeric valued parameters
+  gamma.mu = p_dbl(lower = 0, upper = 1))
+  
+create_autotuner <- function(learner) {
+  AutoTuner$new(
+    learner = svm,
+    search_space = search_space,
+    resampling = rsmp("holdout"),
+    measure = msr("surv.cindex"),
+    terminator = trm("evals", n_evals = 2),
+    tuner = tnr("random_search")
+  )
+}
