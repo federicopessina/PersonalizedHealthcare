@@ -151,15 +151,19 @@ svm.pred$score()
 # Select parameters space
 library(mlr3tuning)
 learner = svm
-search_space = ps(gamma.mu = p_dbl(lower = 0, upper = 1) 
+search_space = ps(gamma.mu = p_dbl(lower = 0.1, upper = 10),
+                  kernel = p_fct(levels = c("polynomial")),
+                  degree = p_int(1, 4, depends = kernel == "polynomial")
 )
+print(search_space)
+rbindlist(generate_design_grid(search_space, 3)$transpose())
 
 create_autotuner = function(learner) {
   AutoTuner$new(
     learner = learner,
     search_space = search_space,
     resampling = rsmp("holdout"),
-    measure = msr("surv.cindex"),
+    measure = msr("classif.ce"),
     terminator = trm("evals", n_evals = 2),
     tuner = tnr("random_search")
   )
@@ -185,7 +189,7 @@ create_autotuner <- function(learner) {
     learner = svm,
     search_space = search_space,
     resampling = rsmp("holdout"),
-    measure = msr("surv.cindex"),
+    measure = msr("classif.ce"),
     terminator = trm("evals", n_evals = 2),
     tuner = tnr("random_search")
   )
