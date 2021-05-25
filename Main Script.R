@@ -135,6 +135,8 @@ prediction.cox$score()
 measure = lapply(c("surv.graf"), msr)
 prediction.cox$score(measure)
 
+##############################################################
+
 ### SVM
 ## Linear Kernel
 library("bbotk") 
@@ -187,6 +189,8 @@ svm$train(task_gbcs)
 svm$model
 svm.pred <- svm$predict(test_gbcs)
 svm.pred$score()
+
+##############################################################
 
 
 ### Random Forest
