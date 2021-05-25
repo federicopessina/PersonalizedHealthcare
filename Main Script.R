@@ -17,12 +17,6 @@ install_github("binderh/CoxBoost")
 install.packages("mlr3verse")
 remotes::install_github("mlr-org/mlr3extralearners")
 library(mlr3extralearners)
-install_learners('surv.coxboost') # TODO
-
-
-library(mlr3learners) #ranger
-library(mlr3proba) #coxph
-
 ##############################################################
 
 # Import dataset German Breast Cancer Study
@@ -104,6 +98,7 @@ abline(h=.5)
 
 # Cox Model
 
+# Fit the model
 fit <- coxph(Surv(survtime, censdead) ~ age + menopause + hormone + size + grade1 + grade2 + nodes + prog_recp + estrg_recp, data = train_gbcs)
 summary(fit)
 
@@ -113,6 +108,7 @@ check_PH
 ND <- data.frame(age = 0, menopause = 1, hormone = 2,
                  size = 0, grade1 = c(1,0,0), grade2=c(0,1,0), grade3=c(0,0,1), nodes = 0, prog_recp=0, estrg_recp=0)
 
+# Fit survival function
 surv_probs_Cox <- survfit(fit, newdata = ND)
 surv_probs_Cox
 
@@ -210,6 +206,7 @@ rf$param_set
 #Create a search space for parameters min.node.size and alpha
 search_space = ps(
   min.node.size = p_int(lower = 1, upper = 6),
+  kernel = p_fct(levels = c("polynomial", "radial")),
   alpha = p_dbl(lower = 0, upper = 1)
 )
 search_space
