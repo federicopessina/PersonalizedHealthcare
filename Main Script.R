@@ -17,12 +17,6 @@ install_github("binderh/CoxBoost")
 install.packages("mlr3verse")
 remotes::install_github("mlr-org/mlr3extralearners")
 library(mlr3extralearners)
-install_learners('surv.coxboost') # TODO
-
-
-library(mlr3learners) #ranger
-library(mlr3proba) #coxph
-
 ##############################################################
 
 # Import dataset German Breast Cancer Study
@@ -206,6 +200,7 @@ rf$param_set
 #Create a search space for parameters min.node.size and alpha
 search_space = ps(
   min.node.size = p_int(lower = 1, upper = 6),
+  kernel = p_fct(levels = c("polynomial", "radial")),
   alpha = p_dbl(lower = 0, upper = 1)
 )
 search_space
