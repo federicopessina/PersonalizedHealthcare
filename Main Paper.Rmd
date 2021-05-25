@@ -113,3 +113,10 @@ summarytools::dfSummary(test_gbcs,
 **set.seed** is a function that permits to probabilistic/random processes such as estimation to be reproduced in a deterministic way. So for reproducibilty of the experiment and of our result we set it to a fixed integer value (123).
 **sample** function takes a sample of the specified size from the elements of gbcs2 without replacement (default).
 
+In the end we print 2 summaries of the characteristics of the train and test dataset.
+
+## Analysis
+
+### Support-Vector Machine
+
+
