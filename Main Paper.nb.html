@@ -1878,11 +1878,186 @@ No   Variable      Stats / Values                Freqs (% of Valid)    Missing
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <p>The dataset has the followuing attributes: * <strong>id</strong> : Identification Code * <strong>diagdate</strong> : Date of diagnosis. * <strong>recdate</strong> : Date of recurrence free survival. * <strong>deathdate</strong> : Date of death. * <strong>age</strong> : Age at diagnosis (years). * <strong>menopause</strong> : Menopausal status. 1 = Yes, 0 = No. * <strong>hormone</strong> : Hormone therapy. 1 = Yes. 0 = No. * <strong>size</strong> : Tumor size (mm). * <strong>grade</strong> : Tumor grade (1-3). * <strong>nodes</strong> : Number of nodes. * <strong>prog_recp</strong> : Number of progesterone receptors. * <strong>estrg_recp</strong> : Number of estrogen receptors. * <strong>rectime</strong> : Time to recurrence (days). * <strong>censrec</strong> : Recurrence status. 1 = Recurrence. 0 = Censored. * <strong>survtime</strong> : Time to death (days). * <strong>censdead</strong> : Censoring status. 1 = Death. 0 = Censored.</p>
+</div>
+<div id="data-cleaning" class="section level2">
+<h2>Data Cleaning</h2>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZ2JjczIkYWdlIDwtIHNjYWxlKGdiY3MyJGFnZSlcbmdiY3MyJG1lbm9wYXVzZSA8LSBnYmNzMiRtZW5vcGF1c2UtMVxuZ2JjczIkaG9ybW9uZSA8LSBnYmNzMiRob3Jtb25lLTFcbmdiY3MyJHNpemUgPC0gc2NhbGUoZ2JjczIkc2l6ZSlcbmdiY3MyJGdyYWRlMSA8LSBpZmVsc2UoZ2JjczIkZ3JhZGU9PTEsIDEsMClcbmdiY3MyJGdyYWRlMiA8LSBpZmVsc2UoZ2JjczIkZ3JhZGU9PTIsIDEsMClcbmdiY3MyJGdyYWRlMyA8LSBpZmVsc2UoZ2JjczIkZ3JhZGU9PTMsIDEsMClcbmdiY3MyJGdyYWRlIDwtIE5VTExcbmdiY3MyJG5vZGVzIDwtIHNjYWxlKGdiY3MyJG5vZGVzKVxuZ2JjczIkcHJvZ19yZWNwIDwtIHNjYWxlKGdiY3MyJHByb2dfcmVjcClcbmdiY3MyJGVzdHJnX3JlY3AgPC0gc2NhbGUoZ2JjczIkZXN0cmdfcmVjcClcbmBgYCJ9 -->
+<pre class="r"><code>gbcs2$age &lt;- scale(gbcs2$age)
+gbcs2$menopause &lt;- gbcs2$menopause-1
+gbcs2$hormone &lt;- gbcs2$hormone-1
+gbcs2$size &lt;- scale(gbcs2$size)
+gbcs2$grade1 &lt;- ifelse(gbcs2$grade==1, 1,0)
+gbcs2$grade2 &lt;- ifelse(gbcs2$grade==2, 1,0)
+gbcs2$grade3 &lt;- ifelse(gbcs2$grade==3, 1,0)
+gbcs2$grade &lt;- NULL
+gbcs2$nodes &lt;- scale(gbcs2$nodes)
+gbcs2$prog_recp &lt;- scale(gbcs2$prog_recp)
+gbcs2$estrg_recp &lt;- scale(gbcs2$estrg_recp)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>We perform some preliminary operations of data cleaning on the dataset: * scale is generic function whose default method centers and/or scales the columns of a numeric matrix. We apply that to age, size, nodes, prog_recp and estrg_recp attributes. * create a boolean attribute for the grade of tumor (1, 2, 3) then set to null the original attribute * change values for boolean attributes menopause, hormone (just for convenience purposes).</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc2V0LnNlZWQoMTIzKVxudHJhaW5fc2V0ID0gc2FtcGxlKG5yb3coZ2JjczIpLCAwLjggKiBucm93KGdiY3MyKSlcbiNzdHIodHJhaW5fc2V0KVxudGVzdF9zZXQgPSBzZXRkaWZmKHNlcV9sZW4obnJvdyhnYmNzMikpLCB0cmFpbl9zZXQpXG5cbiMjIHRyYWluL3Rlc3Qgc2V0IGluaXRpYWxpemF0aW9uIGFuZCBzdW1tYXJ5XG5cbnRyYWluX2diY3MgPC0gZ2JjczJbdHJhaW5fc2V0LCBdXG5zdW1tYXJ5dG9vbHM6OmRmU3VtbWFyeSh0cmFpbl9nYmNzLCBcbiAgICAgICAgICAgICAgICAgICAgICAgIGdyYXBoLmNvbCA9IEYsIFxuICAgICAgICAgICAgICAgICAgICAgICAgdmFsaWQuY29sID0gRlxuKVxuYGBgIn0= -->
+<pre class="r"><code>set.seed(123)
+train_set = sample(nrow(gbcs2), 0.8 * nrow(gbcs2))
+#str(train_set)
+test_set = setdiff(seq_len(nrow(gbcs2)), train_set)
+
+## train/test set initialization and summary
+
+train_gbcs &lt;- gbcs2[train_set, ]
+summarytools::dfSummary(train_gbcs, 
+                        graph.col = F, 
+                        valid.col = F
+)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiRGF0YSBGcmFtZSBTdW1tYXJ5ICBcbnRyYWluX2diY3MgIFxuRGltZW5zaW9uczogNTQ4IHggMTIgIFxuRHVwbGljYXRlczogMCAgXG5cbi0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLVxuTm8gICBWYXJpYWJsZSAgICAgICAgICBTdGF0cyAvIFZhbHVlcyAgICAgICAgICAgICAgICBGcmVxcyAoJSBvZiBWYWxpZCkgICAgTWlzc2luZyAgXG4tLS0tIC0tLS0tLS0tLS0tLS0tLS0tIC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tIC0tLS0tLS0tLS0tLS0tLS0tLS0tLSAtLS0tLS0tLS1cbjEgICAgYWdlICAgICAgICAgICAgICAgTWVhbiAoc2QpIDogMCAoMSkgICAgICAgICAgICAgNTAgZGlzdGluY3QgdmFsdWVzICAgIDAgICAgICAgIFxuICAgICBbbWF0cml4LCBhcnJheV0gICBtaW4gPCBtZWQgPCBtYXg6ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgKDAuMCUpICAgXG4gICAgICAgICAgICAgICAgICAgICAgIC0yLjggPCAtMC4xIDwgMi43ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBcbiAgICAgICAgICAgICAgICAgICAgICAgSVFSIChDVikgOiAxLjUgKC00MykgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIFxuXG4yICAgIG1lbm9wYXVzZSAgICAgICAgIE1pbiAgOiAwICAgICAgICAgICAgICAgICAgICAgIDAgOiAyMzggKDQzLjQlKSAgICAgICAwICAgICAgICBcbiAgICAgW251bWVyaWNdICAgICAgICAgTWVhbiA6IDAuNiAgICAgICAgICAgICAgICAgICAgMSA6IDMxMCAoNTYuNiUpICAgICAgICgwLjAlKSAgIFxuICAgICAgICAgICAgICAgICAgICAgICBNYXggIDogMSAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgXG5cbjMgICAgaG9ybW9uZSAgICAgICAgICAgTWluICA6IDAgICAgICAgICAgICAgICAgICAgICAgMCA6IDM1MiAoNjQuMiUpICAgICAgIDAgICAgICAgIFxuICAgICBbbnVtZXJpY10gICAgICAgICBNZWFuIDogMC40ICAgICAgICAgICAgICAgICAgICAxIDogMTk2ICgzNS44JSkgICAgICAgKDAuMCUpICAgXG4gICAgICAgICAgICAgICAgICAgICAgIE1heCAgOiAxICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBcblxuNCAgICBzaXplICAgICAgICAgICAgICBNZWFuIChzZCkgOiAwICgxKSAgICAgICAgICAgICA1NCBkaXN0aW5jdCB2YWx1ZXMgICAgMCAgICAgICAgXG4gICAgIFttYXRyaXgsIGFycmF5XSAgIG1pbiA8IG1lZCA8IG1heDogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAoMC4wJSkgICBcbiAgICAgICAgICAgICAgICAgICAgICAgLTEuOCA8IC0wLjMgPCA2LjMgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIFxuICAgICAgICAgICAgICAgICAgICAgICBJUVIgKENWKSA6IDEgKC02NC4yKSAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgXG5cbjUgICAgbm9kZXMgICAgICAgICAgICAgTWVhbiAoc2QpIDogMCAoMSkgICAgICAgICAgICAgMjkgZGlzdGluY3QgdmFsdWVzICAgIDAgICAgICAgIFxuICAgICBbbWF0cml4LCBhcnJheV0gICBtaW4gPCBtZWQgPCBtYXg6ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgKDAuMCUpICAgXG4gICAgICAgICAgICAgICAgICAgICAgIC0wLjcgPCAtMC40IDwgOC40ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBcbiAgICAgICAgICAgICAgICAgICAgICAgSVFSIChDVikgOiAxLjEgKC0xMjQuMykgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIFxuXG42ICAgIHByb2dfcmVjcCAgICAgICAgIE1lYW4gKHNkKSA6IDAgKDEuMSkgICAgICAgICAgIDIxNCBkaXN0aW5jdCB2YWx1ZXMgICAwICAgICAgICBcbiAgICAgW21hdHJpeCwgYXJyYXldICAgbWluIDwgbWVkIDwgbWF4OiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICgwLjAlKSAgIFxuICAgICAgICAgICAgICAgICAgICAgICAtMC41IDwgLTAuNCA8IDExLjIgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgXG4gICAgICAgICAgICAgICAgICAgICAgIElRUiAoQ1YpIDogMC42ICg1Ni4zKSAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBcblxuNyAgICBlc3RyZ19yZWNwICAgICAgICBNZWFuIChzZCkgOiAwICgxKSAgICAgICAgICAgICAyMTcgZGlzdGluY3QgdmFsdWVzICAgMCAgICAgICAgXG4gICAgIFttYXRyaXgsIGFycmF5XSAgIG1pbiA8IG1lZCA8IG1heDogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAoMC4wJSkgICBcbiAgICAgICAgICAgICAgICAgICAgICAgLTAuNiA8IC0wLjQgPCA2LjggICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIFxuICAgICAgICAgICAgICAgICAgICAgICBJUVIgKENWKSA6IDAuNyAoODcuMikgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgXG5cbjggICAgc3VydnRpbWUgICAgICAgICAgTWVhbiAoc2QpIDogMTMyMS4yICg2MTMuNCkgICAgNDY3IGRpc3RpbmN0IHZhbHVlcyAgIDAgICAgICAgIFxuICAgICBbbnVtZXJpY10gICAgICAgICBtaW4gPCBtZWQgPCBtYXg6ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgKDAuMCUpICAgXG4gICAgICAgICAgICAgICAgICAgICAgIDggPCAxMzM4IDwgMjY2OCAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBcbiAgICAgICAgICAgICAgICAgICAgICAgSVFSIChDVikgOiA5OTQuOCAoMC41KSAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIFxuXG45ICAgIGNlbnNkZWFkICAgICAgICAgIE1pbiAgOiAwICAgICAgICAgICAgICAgICAgICAgIDAgOiA0MTYgKDc1LjklKSAgICAgICAwICAgICAgICBcbiAgICAgW2ludGVnZXJdICAgICAgICAgTWVhbiA6IDAuMiAgICAgICAgICAgICAgICAgICAgMSA6IDEzMiAoMjQuMSUpICAgICAgICgwLjAlKSAgIFxuICAgICAgICAgICAgICAgICAgICAgICBNYXggIDogMSAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgXG5cbjEwICAgZ3JhZGUxICAgICAgICAgICAgTWluICA6IDAgICAgICAgICAgICAgICAgICAgICAgMCA6IDQ4MSAoODcuOCUpICAgICAgIDAgICAgICAgIFxuICAgICBbbnVtZXJpY10gICAgICAgICBNZWFuIDogMC4xICAgICAgICAgICAgICAgICAgICAxIDogIDY3ICgxMi4yJSkgICAgICAgKDAuMCUpICAgXG4gICAgICAgICAgICAgICAgICAgICAgIE1heCAgOiAxICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBcblxuMTEgICBncmFkZTIgICAgICAgICAgICBNaW4gIDogMCAgICAgICAgICAgICAgICAgICAgICAwIDogMTk3ICgzNS45JSkgICAgICAgMCAgICAgICAgXG4gICAgIFtudW1lcmljXSAgICAgICAgIE1lYW4gOiAwLjYgICAgICAgICAgICAgICAgICAgIDEgOiAzNTEgKDY0LjElKSAgICAgICAoMC4wJSkgICBcbiAgICAgICAgICAgICAgICAgICAgICAgTWF4ICA6IDEgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIFxuXG4xMiAgIGdyYWRlMyAgICAgICAgICAgIE1pbiAgOiAwICAgICAgICAgICAgICAgICAgICAgIDAgOiA0MTggKDc2LjMlKSAgICAgICAwICAgICAgICBcbiAgICAgW251bWVyaWNdICAgICAgICAgTWVhbiA6IDAuMiAgICAgICAgICAgICAgICAgICAgMSA6IDEzMCAoMjMuNyUpICAgICAgICgwLjAlKSAgIFxuICAgICAgICAgICAgICAgICAgICAgICBNYXggIDogMSAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgXG4tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS1cbiJ9 -->
+<pre><code>Data Frame Summary  
+train_gbcs  
+Dimensions: 548 x 12  
+Duplicates: 0  
+
+------------------------------------------------------------------------------------
+No   Variable          Stats / Values                Freqs (% of Valid)    Missing  
+---- ----------------- ----------------------------- --------------------- ---------
+1    age               Mean (sd) : 0 (1)             50 distinct values    0        
+     [matrix, array]   min &lt; med &lt; max:                                    (0.0%)   
+                       -2.8 &lt; -0.1 &lt; 2.7                                            
+                       IQR (CV) : 1.5 (-43)                                         
+
+2    menopause         Min  : 0                      0 : 238 (43.4%)       0        
+     [numeric]         Mean : 0.6                    1 : 310 (56.6%)       (0.0%)   
+                       Max  : 1                                                     
+
+3    hormone           Min  : 0                      0 : 352 (64.2%)       0        
+     [numeric]         Mean : 0.4                    1 : 196 (35.8%)       (0.0%)   
+                       Max  : 1                                                     
+
+4    size              Mean (sd) : 0 (1)             54 distinct values    0        
+     [matrix, array]   min &lt; med &lt; max:                                    (0.0%)   
+                       -1.8 &lt; -0.3 &lt; 6.3                                            
+                       IQR (CV) : 1 (-64.2)                                         
+
+5    nodes             Mean (sd) : 0 (1)             29 distinct values    0        
+     [matrix, array]   min &lt; med &lt; max:                                    (0.0%)   
+                       -0.7 &lt; -0.4 &lt; 8.4                                            
+                       IQR (CV) : 1.1 (-124.3)                                      
+
+6    prog_recp         Mean (sd) : 0 (1.1)           214 distinct values   0        
+     [matrix, array]   min &lt; med &lt; max:                                    (0.0%)   
+                       -0.5 &lt; -0.4 &lt; 11.2                                           
+                       IQR (CV) : 0.6 (56.3)                                        
+
+7    estrg_recp        Mean (sd) : 0 (1)             217 distinct values   0        
+     [matrix, array]   min &lt; med &lt; max:                                    (0.0%)   
+                       -0.6 &lt; -0.4 &lt; 6.8                                            
+                       IQR (CV) : 0.7 (87.2)                                        
+
+8    survtime          Mean (sd) : 1321.2 (613.4)    467 distinct values   0        
+     [numeric]         min &lt; med &lt; max:                                    (0.0%)   
+                       8 &lt; 1338 &lt; 2668                                              
+                       IQR (CV) : 994.8 (0.5)                                       
+
+9    censdead          Min  : 0                      0 : 416 (75.9%)       0        
+     [integer]         Mean : 0.2                    1 : 132 (24.1%)       (0.0%)   
+                       Max  : 1                                                     
+
+10   grade1            Min  : 0                      0 : 481 (87.8%)       0        
+     [numeric]         Mean : 0.1                    1 :  67 (12.2%)       (0.0%)   
+                       Max  : 1                                                     
+
+11   grade2            Min  : 0                      0 : 197 (35.9%)       0        
+     [numeric]         Mean : 0.6                    1 : 351 (64.1%)       (0.0%)   
+                       Max  : 1                                                     
+
+12   grade3            Min  : 0                      0 : 418 (76.3%)       0        
+     [numeric]         Mean : 0.2                    1 : 130 (23.7%)       (0.0%)   
+                       Max  : 1                                                     
+------------------------------------------------------------------------------------</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxudGVzdF9nYmNzIDwtIGdiY3MyW3Rlc3Rfc2V0LCBdXG5zdW1tYXJ5dG9vbHM6OmRmU3VtbWFyeSh0ZXN0X2diY3MsIFxuICAgICAgICAgICAgICAgICAgICAgICAgZ3JhcGguY29sID0gRiwgXG4gICAgICAgICAgICAgICAgICAgICAgICB2YWxpZC5jb2wgPSBGXG4pXG5gYGAifQ== -->
+<pre class="r"><code>test_gbcs &lt;- gbcs2[test_set, ]
+summarytools::dfSummary(test_gbcs, 
+                        graph.col = F, 
+                        valid.col = F
+)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiRGF0YSBGcmFtZSBTdW1tYXJ5ICBcbnRlc3RfZ2JjcyAgXG5EaW1lbnNpb25zOiAxMzggeCAxMiAgXG5EdXBsaWNhdGVzOiAwICBcblxuLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tXG5ObyAgIFZhcmlhYmxlICAgICAgICAgIFN0YXRzIC8gVmFsdWVzICAgICAgICAgICAgICAgIEZyZXFzICglIG9mIFZhbGlkKSAgICBNaXNzaW5nICBcbi0tLS0gLS0tLS0tLS0tLS0tLS0tLS0gLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0gLS0tLS0tLS0tLS0tLS0tLS0tLS0tIC0tLS0tLS0tLVxuMSAgICBhZ2UgICAgICAgICAgICAgICBNZWFuIChzZCkgOiAwLjEgKDEpICAgICAgICAgICA0MCBkaXN0aW5jdCB2YWx1ZXMgICAgMCAgICAgICAgXG4gICAgIFttYXRyaXgsIGFycmF5XSAgIG1pbiA8IG1lZCA8IG1heDogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAoMC4wJSkgICBcbiAgICAgICAgICAgICAgICAgICAgICAgLTMuMiA8IDAgPCAyLjQgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIFxuICAgICAgICAgICAgICAgICAgICAgICBJUVIgKENWKSA6IDEuNCAoMTAuNSkgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgXG5cbjIgICAgbWVub3BhdXNlICAgICAgICAgTWluICA6IDAgICAgICAgICAgICAgICAgICAgICAgMCA6IDUyICgzNy43JSkgICAgICAgIDAgICAgICAgIFxuICAgICBbbnVtZXJpY10gICAgICAgICBNZWFuIDogMC42ICAgICAgICAgICAgICAgICAgICAxIDogODYgKDYyLjMlKSAgICAgICAgKDAuMCUpICAgXG4gICAgICAgICAgICAgICAgICAgICAgIE1heCAgOiAxICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBcblxuMyAgICBob3Jtb25lICAgICAgICAgICBNaW4gIDogMCAgICAgICAgICAgICAgICAgICAgICAwIDogODggKDYzLjglKSAgICAgICAgMCAgICAgICAgXG4gICAgIFtudW1lcmljXSAgICAgICAgIE1lYW4gOiAwLjQgICAgICAgICAgICAgICAgICAgIDEgOiA1MCAoMzYuMiUpICAgICAgICAoMC4wJSkgICBcbiAgICAgICAgICAgICAgICAgICAgICAgTWF4ICA6IDEgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIFxuXG40ICAgIHNpemUgICAgICAgICAgICAgIE1lYW4gKHNkKSA6IDAuMSAoMSkgICAgICAgICAgIDQ0IGRpc3RpbmN0IHZhbHVlcyAgICAwICAgICAgICBcbiAgICAgW21hdHJpeCwgYXJyYXldICAgbWluIDwgbWVkIDwgbWF4OiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICgwLjAlKSAgIFxuICAgICAgICAgICAgICAgICAgICAgICAtMS44IDwgLTAuMSA8IDMuNCAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgXG4gICAgICAgICAgICAgICAgICAgICAgIElRUiAoQ1YpIDogMS4yICgxNi41KSAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBcblxuNSAgICBub2RlcyAgICAgICAgICAgICBNZWFuIChzZCkgOiAwICgwLjkpICAgICAgICAgICAyMCBkaXN0aW5jdCB2YWx1ZXMgICAgMCAgICAgICAgXG4gICAgIFttYXRyaXgsIGFycmF5XSAgIG1pbiA8IG1lZCA8IG1heDogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAoMC4wJSkgICBcbiAgICAgICAgICAgICAgICAgICAgICAgLTAuNyA8IC0wLjMgPCA1LjcgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIFxuICAgICAgICAgICAgICAgICAgICAgICBJUVIgKENWKSA6IDAuOSAoMjguNCkgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgXG5cbjYgICAgcHJvZ19yZWNwICAgICAgICAgTWVhbiAoc2QpIDogLTAuMSAoMC44KSAgICAgICAgODkgZGlzdGluY3QgdmFsdWVzICAgIDAgICAgICAgIFxuICAgICBbbWF0cml4LCBhcnJheV0gICBtaW4gPCBtZWQgPCBtYXg6ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgKDAuMCUpICAgXG4gICAgICAgICAgICAgICAgICAgICAgIC0wLjUgPCAtMC40IDwgMy43ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBcbiAgICAgICAgICAgICAgICAgICAgICAgSVFSIChDVikgOiAwLjYgKC0xMC4zKSAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIFxuXG43ICAgIGVzdHJnX3JlY3AgICAgICAgIE1lYW4gKHNkKSA6IDAgKDAuOSkgICAgICAgICAgIDg1IGRpc3RpbmN0IHZhbHVlcyAgICAwICAgICAgICBcbiAgICAgW21hdHJpeCwgYXJyYXldICAgbWluIDwgbWVkIDwgbWF4OiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICgwLjAlKSAgIFxuICAgICAgICAgICAgICAgICAgICAgICAtMC42IDwgLTAuNCA8IDYuNSAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgXG4gICAgICAgICAgICAgICAgICAgICAgIElRUiAoQ1YpIDogMC42ICgtMjAuMykgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBcblxuOCAgICBzdXJ2dGltZSAgICAgICAgICBNZWFuIChzZCkgOiAxMzE4LjQgKDY0NC4yKSAgICAxMzMgZGlzdGluY3QgdmFsdWVzICAgMCAgICAgICAgXG4gICAgIFtudW1lcmljXSAgICAgICAgIG1pbiA8IG1lZCA8IG1heDogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAoMC4wJSkgICBcbiAgICAgICAgICAgICAgICAgICAgICAgMTYgPCAxMzMxLjUgPCAyNjEyICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIFxuICAgICAgICAgICAgICAgICAgICAgICBJUVIgKENWKSA6IDEwOTcuOCAoMC41KSAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgXG5cbjkgICAgY2Vuc2RlYWQgICAgICAgICAgTWluICA6IDAgICAgICAgICAgICAgICAgICAgICAgMCA6IDk5ICg3MS43JSkgICAgICAgIDAgICAgICAgIFxuICAgICBbaW50ZWdlcl0gICAgICAgICBNZWFuIDogMC4zICAgICAgICAgICAgICAgICAgICAxIDogMzkgKDI4LjMlKSAgICAgICAgKDAuMCUpICAgXG4gICAgICAgICAgICAgICAgICAgICAgIE1heCAgOiAxICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBcblxuMTAgICBncmFkZTEgICAgICAgICAgICBNaW4gIDogMCAgICAgICAgICAgICAgICAgICAgICAwIDogMTI0ICg4OS45JSkgICAgICAgMCAgICAgICAgXG4gICAgIFtudW1lcmljXSAgICAgICAgIE1lYW4gOiAwLjEgICAgICAgICAgICAgICAgICAgIDEgOiAgMTQgKDEwLjElKSAgICAgICAoMC4wJSkgICBcbiAgICAgICAgICAgICAgICAgICAgICAgTWF4ICA6IDEgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIFxuXG4xMSAgIGdyYWRlMiAgICAgICAgICAgIE1pbiAgOiAwICAgICAgICAgICAgICAgICAgICAgIDAgOiA0NSAoMzIuNiUpICAgICAgICAwICAgICAgICBcbiAgICAgW251bWVyaWNdICAgICAgICAgTWVhbiA6IDAuNyAgICAgICAgICAgICAgICAgICAgMSA6IDkzICg2Ny40JSkgICAgICAgICgwLjAlKSAgIFxuICAgICAgICAgICAgICAgICAgICAgICBNYXggIDogMSAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgXG5cbjEyICAgZ3JhZGUzICAgICAgICAgICAgTWluICA6IDAgICAgICAgICAgICAgICAgICAgICAgMCA6IDEwNyAoNzcuNSUpICAgICAgIDAgICAgICAgIFxuICAgICBbbnVtZXJpY10gICAgICAgICBNZWFuIDogMC4yICAgICAgICAgICAgICAgICAgICAxIDogIDMxICgyMi41JSkgICAgICAgKDAuMCUpICAgXG4gICAgICAgICAgICAgICAgICAgICAgIE1heCAgOiAxICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBcbi0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLVxuIn0= -->
+<pre><code>Data Frame Summary  
+test_gbcs  
+Dimensions: 138 x 12  
+Duplicates: 0  
+
+------------------------------------------------------------------------------------
+No   Variable          Stats / Values                Freqs (% of Valid)    Missing  
+---- ----------------- ----------------------------- --------------------- ---------
+1    age               Mean (sd) : 0.1 (1)           40 distinct values    0        
+     [matrix, array]   min &lt; med &lt; max:                                    (0.0%)   
+                       -3.2 &lt; 0 &lt; 2.4                                               
+                       IQR (CV) : 1.4 (10.5)                                        
+
+2    menopause         Min  : 0                      0 : 52 (37.7%)        0        
+     [numeric]         Mean : 0.6                    1 : 86 (62.3%)        (0.0%)   
+                       Max  : 1                                                     
+
+3    hormone           Min  : 0                      0 : 88 (63.8%)        0        
+     [numeric]         Mean : 0.4                    1 : 50 (36.2%)        (0.0%)   
+                       Max  : 1                                                     
+
+4    size              Mean (sd) : 0.1 (1)           44 distinct values    0        
+     [matrix, array]   min &lt; med &lt; max:                                    (0.0%)   
+                       -1.8 &lt; -0.1 &lt; 3.4                                            
+                       IQR (CV) : 1.2 (16.5)                                        
+
+5    nodes             Mean (sd) : 0 (0.9)           20 distinct values    0        
+     [matrix, array]   min &lt; med &lt; max:                                    (0.0%)   
+                       -0.7 &lt; -0.3 &lt; 5.7                                            
+                       IQR (CV) : 0.9 (28.4)                                        
+
+6    prog_recp         Mean (sd) : -0.1 (0.8)        89 distinct values    0        
+     [matrix, array]   min &lt; med &lt; max:                                    (0.0%)   
+                       -0.5 &lt; -0.4 &lt; 3.7                                            
+                       IQR (CV) : 0.6 (-10.3)                                       
+
+7    estrg_recp        Mean (sd) : 0 (0.9)           85 distinct values    0        
+     [matrix, array]   min &lt; med &lt; max:                                    (0.0%)   
+                       -0.6 &lt; -0.4 &lt; 6.5                                            
+                       IQR (CV) : 0.6 (-20.3)                                       
+
+8    survtime          Mean (sd) : 1318.4 (644.2)    133 distinct values   0        
+     [numeric]         min &lt; med &lt; max:                                    (0.0%)   
+                       16 &lt; 1331.5 &lt; 2612                                           
+                       IQR (CV) : 1097.8 (0.5)                                      
+
+9    censdead          Min  : 0                      0 : 99 (71.7%)        0        
+     [integer]         Mean : 0.3                    1 : 39 (28.3%)        (0.0%)   
+                       Max  : 1                                                     
+
+10   grade1            Min  : 0                      0 : 124 (89.9%)       0        
+     [numeric]         Mean : 0.1                    1 :  14 (10.1%)       (0.0%)   
+                       Max  : 1                                                     
+
+11   grade2            Min  : 0                      0 : 45 (32.6%)        0        
+     [numeric]         Mean : 0.7                    1 : 93 (67.4%)        (0.0%)   
+                       Max  : 1                                                     
+
+12   grade3            Min  : 0                      0 : 107 (77.5%)       0        
+     [numeric]         Mean : 0.2                    1 :  31 (22.5%)       (0.0%)   
+                       Max  : 1                                                     
+------------------------------------------------------------------------------------</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p><strong>set.seed</strong> is a function that permits to probabilistic/random processes such as estimation to be reproduced in a deterministic way. So for reproducibilty of the experiment and of our result we set it to a fixed integer value (123). <strong>sample</strong> function takes a sample of the specified size from the elements of gbcs2 without replacement (default).</p>
 <!-- rnb-text-end -->
 </div>
 </div>
 
-<div id="rmd-source-code">LS0tDQp0aXRsZTogIlBlcnNvbmFsaXplZCBIZWFsdGhjYXJlIExhYm9yYXRvcnkiDQpvdXRwdXQ6IGh0bWxfbm90ZWJvb2sNCi0tLQ0KDQojIFBlcnNvbmFsaXplZCBIZWFsdGhjYXJlIExhYm9yYXRvcnkNCg0KIyMgTG9hZCBQYWNrYWdlcw0KDQpgYGB7ciBJbnN0YWxsIG11bHRpcGxlIHBhY2thZ2UgYXQgYSB0aW1lfQ0KcGFjbWFuOjpwX2xvYWQobWxyMywgbWxyM3Byb2JhLCBtbHIzcGlwZWxpbmVzLCANCiAgICAgICAgICAgICAgIG1scjNsZWFybmVycywgbWxyM3ZpeixtbHIzdHVuaW5nLCANCiAgICAgICAgICAgICAgIG1scjNiZW5jaG1hcmssIG1scjNtaXNjLCBtbHIzZXh0cmFsZWFybmVycywNCiAgICAgICAgICAgICAgIFI2LCBkYXRhLnRhYmxlLCBsZ3IsIHV1aWQsIG1sYmVuY2gsIGRpZ2VzdCwgDQogICAgICAgICAgICAgICBiYWNrcG9ydHMsIGNoZWNrbWF0ZSwgcGFyYWRveCwgcmV0aWN1bGF0ZSwgDQogICAgICAgICAgICAgICBrZXJhcywgZGV2dG9vbHMsIHN1cnZpdmFsLCBybXMsIHN1bW1hcnl0b29scywga25pdHIpDQpgYGANCg0KVGhpcyBmdW5jdGlvbiBpcyBhIHdyYXBwZXIgZm9yIGxpYnJhcnkgYW5kIHJlcXVpcmUuIEl0IGNoZWNrcyB0byBzZWUgaWYgYSBwYWNrYWdlIGlzIGluc3RhbGxlZCwgaWYgbm90IGl0IGF0dGVtcHRzIHRvIGluc3RhbGwgdGhlIHBhY2thZ2UgZnJvbSBDUkFOIGFuZC9vciBhbnkgb3RoZXIgcmVwb3NpdG9yeSBpbiB0aGUgcGFjbWFuIHJlcG9zaXRvcnkgbGlzdC4NCg0KVGhlbiB3ZSBpbnN0YWxsIHRoZSByZXF1aXJlZCBwYWNrYWdlcyBhbmQgaW1wb3J0IGludG8gZW52aXJvbnZtZW50Lg0KDQpgYGB7ciBJbnN0YWxsIHJlcXVpcmVkIHBhY2thZ2VzIGFuZCBpbXBvcnQgaW50byBlbnZpcm9udm1lbnR9DQppbnN0YWxsX2dpdGh1YigiYmluZGVyaC9Db3hCb29zdCIpDQppbnN0YWxsLnBhY2thZ2VzKCJtbHIzdmVyc2UiKQ0KcmVtb3Rlczo6aW5zdGFsbF9naXRodWIoIm1sci1vcmcvbWxyM2V4dHJhbGVhcm5lcnMiKQ0KbGlicmFyeShtbHIzZXh0cmFsZWFybmVycykNCmluc3RhbGxfbGVhcm5lcnMoJ3N1cnYuY294Ym9vc3QnKQ0KbGlicmFyeShtbHIzbGVhcm5lcnMpICNyYW5nZXINCmxpYnJhcnkobWxyM3Byb2JhKSAjY294cGgNCmBgYA0KDQpJbiBwYXJ0aWN1bGFyIHdlIGluc3RhbGw6DQoqICoqQ294Qm9vc3QqKiA6IFRoaXMgcGFja2FnZSBwcm92aWRlcyByb3V0aW5lcyBmb3IgZml0dGluZyBDb3ggbW9kZWxzIGJ5IGxpa2VsaWhvb2QgYmFzZWQgYm9vc3RpbmcgZm9yIGEgc2luZ2xlIGVuZHBvaW50IG9yIGluIHByZXNlbmNlIG9mIGNvbXBldGluZyByaXNrcy4NCiogKiptbHIzdmVyc2UqKiA6IFRoaXMgcGFja2FnZSBpcyBpbnRlbmRlZCB0byBzaW1wbGlmeSBib3RoIGluc3RhbGxhdGlvbiBhbmQgbG9hZGluZyBvZiBwYWNrYWdlcyBmcm9tIHRoZSBtbHIzIGVjb3N5c3RlbS4gSW5zdGVhZCBvZiBkZXBlbmRpbmcgb24gdGhlIGV4dGVuc2lvbiBwYWNrYWdlcywgZnVuY3Rpb25zIHJlcXVpcmVkIGZvciBkYXRhIGFuYWx5c2lzIGFyZSByZS1leHBvcnRlZCwgcHJvdmlkaW5nIGEgdGhpbiB2aWV3IG9uIHRoZSBtb3N0IGltcG9ydGFudCBmdW5jdGlvbmFsaXR5IG9mIHRoZSBtbHIzIGVjb3N5c3RlbS4NCiogKiptbHIzZXh0cmFsZWFybmVycyoqIDogbWxyM2V4dHJhbGVhcm5lcnMgY29udGFpbnMgYWxsIGxlYXJuZXJzIGZyb20gbWxyMyB0aGF0IGFyZSBub3QgaW4gbWxyM2xlYXJuZXJzIG9yIHRoZSBjb3JlIHBhY2thZ2VzLiBtbHIzZXh0cmFsZWFybmVycyBjb250YWlucyBoZWxwZXIgZnVuY3Rpb25zIHRvIGZpbmQgd2hlcmUgYWxsIHRoZSBsZWFybmVycywgYWNyb3NzIHRoZSBtbHIzdmVyc2UsIGxpdmUgYW5kIHRvIGluc3RhbGwgcmVxdWlyZWQgcGFja2FnZXMgdG8gcnVuIHRoZXNlIGxlYXJuZXJzLiBTZWUgdGhlIGludGVyYWN0aXZlIGxlYXJuZXIgbGlzdCBmb3IgdGhlIGZ1bGwgbGlzdCBvZiBsZWFybmVycyBpbiB0aGUgbWxyM3ZlcnNlIGFuZCB0aGUgbGVhcm5lciBzdGF0dXMgcGFnZSBmb3IgYSBsaXZlIGJ1aWxkIHN0YXR1cy4NCiogKiptbHIzcHJvYmEqKiA6IG1scjNwcm9iYSBpcyBhIG1hY2hpbmUgbGVhcm5pbmcgdG9vbGtpdCBmb3IgbWFraW5nIHByb2JhYmlsaXN0aWMgcHJlZGljdGlvbnMgd2l0aGluIHRoZSBtbHIzIGVjb3N5c3RlbS4gSXQgY3VycmVudGx5IHN1cHBvcnRzIHRoZSB0YXNrcyBvZiBQcm9iYWJpbGlzdGljIHN1cGVydmlzZWQgcmVncmVzc2lvbiwgUHJlZGljdGl2ZSBzdXJ2aXZhbCBhbmFseXNpcywgVW5jb25kaXRpb25hbCBkaXN0cmlidXRpb24gZXN0aW1hdGlvbi4NCg0KIyMgTG9hZCBEYXRhc2V0DQoNCmBgYHtyIEdlcm1hbiBCcmVhc3QgQ2FuY2VyIFN0dWR5IERhdGFzZXR9DQpnYmNzIDwtIG1scjNwcm9iYTo6Z2Jjcw0KDQpnYmNzMiA8LSBnYmNzWyxjKDU6MTIsMTU6MTYpXQ0Kc3VtbWFyeXRvb2xzOjpkZlN1bW1hcnkoZ2JjczIsIA0KICAgICAgICAgICAgICAgICAgICAgICAgZ3JhcGguY29sID0gRiwgDQogICAgICAgICAgICAgICAgICAgICAgICB2YWxpZC5jb2wgPSBGDQopDQoNCmhlYWQoZ2JjcykgIyBwcmludCBleGFtcGxlDQpgYGANClRoZSBkYXRhc2V0IGhhcyB0aGUgZm9sbG93dWluZyBhdHRyaWJ1dGVzOg0KKiAqKmlkKiogOiBJZGVudGlmaWNhdGlvbiBDb2RlDQoqICoqZGlhZ2RhdGUqKiA6IERhdGUgb2YgZGlhZ25vc2lzLg0KKiAqKnJlY2RhdGUqKiA6IERhdGUgb2YgcmVjdXJyZW5jZSBmcmVlIHN1cnZpdmFsLg0KKiAqKmRlYXRoZGF0ZSoqIDogRGF0ZSBvZiBkZWF0aC4NCiogKiphZ2UqKiA6IEFnZSBhdCBkaWFnbm9zaXMgKHllYXJzKS4NCiogKiptZW5vcGF1c2UqKiA6IE1lbm9wYXVzYWwgc3RhdHVzLiAxID0gWWVzLCAwID0gTm8uDQoqICoqaG9ybW9uZSoqIDogSG9ybW9uZSB0aGVyYXB5LiAxID0gWWVzLiAwID0gTm8uDQoqICoqc2l6ZSoqIDogVHVtb3Igc2l6ZSAobW0pLg0KKiAqKmdyYWRlKiogOiBUdW1vciBncmFkZSAoMS0zKS4NCiogKipub2RlcyoqIDogTnVtYmVyIG9mIG5vZGVzLg0KKiAqKnByb2dfcmVjcCoqIDogTnVtYmVyIG9mIHByb2dlc3Rlcm9uZSByZWNlcHRvcnMuDQoqICoqZXN0cmdfcmVjcCoqIDogTnVtYmVyIG9mIGVzdHJvZ2VuIHJlY2VwdG9ycy4NCiogKipyZWN0aW1lKiogOiBUaW1lIHRvIHJlY3VycmVuY2UgKGRheXMpLg0KKiAqKmNlbnNyZWMqKiA6IFJlY3VycmVuY2Ugc3RhdHVzLiAxID0gUmVjdXJyZW5jZS4gMCA9IENlbnNvcmVkLg0KKiAqKnN1cnZ0aW1lKiogOiBUaW1lIHRvIGRlYXRoIChkYXlzKS4NCiogKipjZW5zZGVhZCoqIDogQ2Vuc29yaW5nIHN0YXR1cy4gMSA9IERlYXRoLiAwID0gQ2Vuc29yZWQuDQo=</div>
+<div id="rmd-source-code">LS0tDQp0aXRsZTogIlBlcnNvbmFsaXplZCBIZWFsdGhjYXJlIExhYm9yYXRvcnkiDQpvdXRwdXQ6IGh0bWxfbm90ZWJvb2sNCi0tLQ0KDQojIFBlcnNvbmFsaXplZCBIZWFsdGhjYXJlIExhYm9yYXRvcnkNCg0KIyMgTG9hZCBQYWNrYWdlcw0KDQpgYGB7ciBJbnN0YWxsIG11bHRpcGxlIHBhY2thZ2UgYXQgYSB0aW1lfQ0KcGFjbWFuOjpwX2xvYWQobWxyMywgbWxyM3Byb2JhLCBtbHIzcGlwZWxpbmVzLCANCiAgICAgICAgICAgICAgIG1scjNsZWFybmVycywgbWxyM3ZpeixtbHIzdHVuaW5nLCANCiAgICAgICAgICAgICAgIG1scjNiZW5jaG1hcmssIG1scjNtaXNjLCBtbHIzZXh0cmFsZWFybmVycywNCiAgICAgICAgICAgICAgIFI2LCBkYXRhLnRhYmxlLCBsZ3IsIHV1aWQsIG1sYmVuY2gsIGRpZ2VzdCwgDQogICAgICAgICAgICAgICBiYWNrcG9ydHMsIGNoZWNrbWF0ZSwgcGFyYWRveCwgcmV0aWN1bGF0ZSwgDQogICAgICAgICAgICAgICBrZXJhcywgZGV2dG9vbHMsIHN1cnZpdmFsLCBybXMsIHN1bW1hcnl0b29scywga25pdHIpDQpgYGANCg0KVGhpcyBmdW5jdGlvbiBpcyBhIHdyYXBwZXIgZm9yIGxpYnJhcnkgYW5kIHJlcXVpcmUuIEl0IGNoZWNrcyB0byBzZWUgaWYgYSBwYWNrYWdlIGlzIGluc3RhbGxlZCwgaWYgbm90IGl0IGF0dGVtcHRzIHRvIGluc3RhbGwgdGhlIHBhY2thZ2UgZnJvbSBDUkFOIGFuZC9vciBhbnkgb3RoZXIgcmVwb3NpdG9yeSBpbiB0aGUgcGFjbWFuIHJlcG9zaXRvcnkgbGlzdC4NCg0KVGhlbiB3ZSBpbnN0YWxsIHRoZSByZXF1aXJlZCBwYWNrYWdlcyBhbmQgaW1wb3J0IGludG8gZW52aXJvbnZtZW50Lg0KDQpgYGB7ciBJbnN0YWxsIHJlcXVpcmVkIHBhY2thZ2VzIGFuZCBpbXBvcnQgaW50byBlbnZpcm9udm1lbnR9DQppbnN0YWxsX2dpdGh1YigiYmluZGVyaC9Db3hCb29zdCIpDQppbnN0YWxsLnBhY2thZ2VzKCJtbHIzdmVyc2UiKQ0KcmVtb3Rlczo6aW5zdGFsbF9naXRodWIoIm1sci1vcmcvbWxyM2V4dHJhbGVhcm5lcnMiKQ0KbGlicmFyeShtbHIzZXh0cmFsZWFybmVycykNCmluc3RhbGxfbGVhcm5lcnMoJ3N1cnYuY294Ym9vc3QnKQ0KbGlicmFyeShtbHIzbGVhcm5lcnMpICNyYW5nZXINCmxpYnJhcnkobWxyM3Byb2JhKSAjY294cGgNCmBgYA0KDQpJbiBwYXJ0aWN1bGFyIHdlIGluc3RhbGw6DQoqICoqQ294Qm9vc3QqKiA6IFRoaXMgcGFja2FnZSBwcm92aWRlcyByb3V0aW5lcyBmb3IgZml0dGluZyBDb3ggbW9kZWxzIGJ5IGxpa2VsaWhvb2QgYmFzZWQgYm9vc3RpbmcgZm9yIGEgc2luZ2xlIGVuZHBvaW50IG9yIGluIHByZXNlbmNlIG9mIGNvbXBldGluZyByaXNrcy4NCiogKiptbHIzdmVyc2UqKiA6IFRoaXMgcGFja2FnZSBpcyBpbnRlbmRlZCB0byBzaW1wbGlmeSBib3RoIGluc3RhbGxhdGlvbiBhbmQgbG9hZGluZyBvZiBwYWNrYWdlcyBmcm9tIHRoZSBtbHIzIGVjb3N5c3RlbS4gSW5zdGVhZCBvZiBkZXBlbmRpbmcgb24gdGhlIGV4dGVuc2lvbiBwYWNrYWdlcywgZnVuY3Rpb25zIHJlcXVpcmVkIGZvciBkYXRhIGFuYWx5c2lzIGFyZSByZS1leHBvcnRlZCwgcHJvdmlkaW5nIGEgdGhpbiB2aWV3IG9uIHRoZSBtb3N0IGltcG9ydGFudCBmdW5jdGlvbmFsaXR5IG9mIHRoZSBtbHIzIGVjb3N5c3RlbS4NCiogKiptbHIzZXh0cmFsZWFybmVycyoqIDogbWxyM2V4dHJhbGVhcm5lcnMgY29udGFpbnMgYWxsIGxlYXJuZXJzIGZyb20gbWxyMyB0aGF0IGFyZSBub3QgaW4gbWxyM2xlYXJuZXJzIG9yIHRoZSBjb3JlIHBhY2thZ2VzLiBtbHIzZXh0cmFsZWFybmVycyBjb250YWlucyBoZWxwZXIgZnVuY3Rpb25zIHRvIGZpbmQgd2hlcmUgYWxsIHRoZSBsZWFybmVycywgYWNyb3NzIHRoZSBtbHIzdmVyc2UsIGxpdmUgYW5kIHRvIGluc3RhbGwgcmVxdWlyZWQgcGFja2FnZXMgdG8gcnVuIHRoZXNlIGxlYXJuZXJzLiBTZWUgdGhlIGludGVyYWN0aXZlIGxlYXJuZXIgbGlzdCBmb3IgdGhlIGZ1bGwgbGlzdCBvZiBsZWFybmVycyBpbiB0aGUgbWxyM3ZlcnNlIGFuZCB0aGUgbGVhcm5lciBzdGF0dXMgcGFnZSBmb3IgYSBsaXZlIGJ1aWxkIHN0YXR1cy4NCiogKiptbHIzcHJvYmEqKiA6IG1scjNwcm9iYSBpcyBhIG1hY2hpbmUgbGVhcm5pbmcgdG9vbGtpdCBmb3IgbWFraW5nIHByb2JhYmlsaXN0aWMgcHJlZGljdGlvbnMgd2l0aGluIHRoZSBtbHIzIGVjb3N5c3RlbS4gSXQgY3VycmVudGx5IHN1cHBvcnRzIHRoZSB0YXNrcyBvZiBQcm9iYWJpbGlzdGljIHN1cGVydmlzZWQgcmVncmVzc2lvbiwgUHJlZGljdGl2ZSBzdXJ2aXZhbCBhbmFseXNpcywgVW5jb25kaXRpb25hbCBkaXN0cmlidXRpb24gZXN0aW1hdGlvbi4NCg0KIyMgTG9hZCBEYXRhc2V0DQoNCmBgYHtyIEdlcm1hbiBCcmVhc3QgQ2FuY2VyIFN0dWR5IERhdGFzZXR9DQpnYmNzIDwtIG1scjNwcm9iYTo6Z2Jjcw0KDQpnYmNzMiA8LSBnYmNzWyxjKDU6MTIsMTU6MTYpXQ0Kc3VtbWFyeXRvb2xzOjpkZlN1bW1hcnkoZ2JjczIsIA0KICAgICAgICAgICAgICAgICAgICAgICAgZ3JhcGguY29sID0gRiwgDQogICAgICAgICAgICAgICAgICAgICAgICB2YWxpZC5jb2wgPSBGDQopDQoNCmhlYWQoZ2JjcykgIyBwcmludCBleGFtcGxlDQpgYGANClRoZSBkYXRhc2V0IGhhcyB0aGUgZm9sbG93dWluZyBhdHRyaWJ1dGVzOg0KKiAqKmlkKiogOiBJZGVudGlmaWNhdGlvbiBDb2RlDQoqICoqZGlhZ2RhdGUqKiA6IERhdGUgb2YgZGlhZ25vc2lzLg0KKiAqKnJlY2RhdGUqKiA6IERhdGUgb2YgcmVjdXJyZW5jZSBmcmVlIHN1cnZpdmFsLg0KKiAqKmRlYXRoZGF0ZSoqIDogRGF0ZSBvZiBkZWF0aC4NCiogKiphZ2UqKiA6IEFnZSBhdCBkaWFnbm9zaXMgKHllYXJzKS4NCiogKiptZW5vcGF1c2UqKiA6IE1lbm9wYXVzYWwgc3RhdHVzLiAxID0gWWVzLCAwID0gTm8uDQoqICoqaG9ybW9uZSoqIDogSG9ybW9uZSB0aGVyYXB5LiAxID0gWWVzLiAwID0gTm8uDQoqICoqc2l6ZSoqIDogVHVtb3Igc2l6ZSAobW0pLg0KKiAqKmdyYWRlKiogOiBUdW1vciBncmFkZSAoMS0zKS4NCiogKipub2RlcyoqIDogTnVtYmVyIG9mIG5vZGVzLg0KKiAqKnByb2dfcmVjcCoqIDogTnVtYmVyIG9mIHByb2dlc3Rlcm9uZSByZWNlcHRvcnMuDQoqICoqZXN0cmdfcmVjcCoqIDogTnVtYmVyIG9mIGVzdHJvZ2VuIHJlY2VwdG9ycy4NCiogKipyZWN0aW1lKiogOiBUaW1lIHRvIHJlY3VycmVuY2UgKGRheXMpLg0KKiAqKmNlbnNyZWMqKiA6IFJlY3VycmVuY2Ugc3RhdHVzLiAxID0gUmVjdXJyZW5jZS4gMCA9IENlbnNvcmVkLg0KKiAqKnN1cnZ0aW1lKiogOiBUaW1lIHRvIGRlYXRoIChkYXlzKS4NCiogKipjZW5zZGVhZCoqIDogQ2Vuc29yaW5nIHN0YXR1cy4gMSA9IERlYXRoLiAwID0gQ2Vuc29yZWQuDQoNCiMjIERhdGEgQ2xlYW5pbmcNCg0KYGBge3IgTm9ybWFsaXplL1NjYWxlIENvbnRpbnVvdXMgdmFyaWFibGVzfQ0KZ2JjczIkYWdlIDwtIHNjYWxlKGdiY3MyJGFnZSkNCmdiY3MyJG1lbm9wYXVzZSA8LSBnYmNzMiRtZW5vcGF1c2UtMQ0KZ2JjczIkaG9ybW9uZSA8LSBnYmNzMiRob3Jtb25lLTENCmdiY3MyJHNpemUgPC0gc2NhbGUoZ2JjczIkc2l6ZSkNCmdiY3MyJGdyYWRlMSA8LSBpZmVsc2UoZ2JjczIkZ3JhZGU9PTEsIDEsMCkNCmdiY3MyJGdyYWRlMiA8LSBpZmVsc2UoZ2JjczIkZ3JhZGU9PTIsIDEsMCkNCmdiY3MyJGdyYWRlMyA8LSBpZmVsc2UoZ2JjczIkZ3JhZGU9PTMsIDEsMCkNCmdiY3MyJGdyYWRlIDwtIE5VTEwNCmdiY3MyJG5vZGVzIDwtIHNjYWxlKGdiY3MyJG5vZGVzKQ0KZ2JjczIkcHJvZ19yZWNwIDwtIHNjYWxlKGdiY3MyJHByb2dfcmVjcCkNCmdiY3MyJGVzdHJnX3JlY3AgPC0gc2NhbGUoZ2JjczIkZXN0cmdfcmVjcCkNCmBgYA0KDQpXZSBwZXJmb3JtIHNvbWUgcHJlbGltaW5hcnkgb3BlcmF0aW9ucyBvZiBkYXRhIGNsZWFuaW5nIG9uIHRoZSBkYXRhc2V0Og0KKiBzY2FsZSBpcyBnZW5lcmljIGZ1bmN0aW9uIHdob3NlIGRlZmF1bHQgbWV0aG9kIGNlbnRlcnMgYW5kL29yIHNjYWxlcyB0aGUgY29sdW1ucyBvZiBhIG51bWVyaWMgbWF0cml4LiBXZSBhcHBseSB0aGF0IHRvIGFnZSwgc2l6ZSwgbm9kZXMsIHByb2dfcmVjcCBhbmQgZXN0cmdfcmVjcCBhdHRyaWJ1dGVzLg0KKiBjcmVhdGUgYSBib29sZWFuIGF0dHJpYnV0ZSBmb3IgdGhlIGdyYWRlIG9mIHR1bW9yICgxLCAyLCAzKSB0aGVuIHNldCB0byBudWxsIHRoZSBvcmlnaW5hbCBhdHRyaWJ1dGUNCiogY2hhbmdlIHZhbHVlcyBmb3IgYm9vbGVhbiBhdHRyaWJ1dGVzIG1lbm9wYXVzZSwgaG9ybW9uZSAoanVzdCBmb3IgY29udmVuaWVuY2UgcHVycG9zZXMpLg0KDQpgYGB7ciBUcmFpbi9UZXN0IFNwbGl0fQ0Kc2V0LnNlZWQoMTIzKQ0KdHJhaW5fc2V0ID0gc2FtcGxlKG5yb3coZ2JjczIpLCAwLjggKiBucm93KGdiY3MyKSkNCiNzdHIodHJhaW5fc2V0KQ0KdGVzdF9zZXQgPSBzZXRkaWZmKHNlcV9sZW4obnJvdyhnYmNzMikpLCB0cmFpbl9zZXQpDQoNCiMjIHRyYWluL3Rlc3Qgc2V0IGluaXRpYWxpemF0aW9uIGFuZCBzdW1tYXJ5DQoNCnRyYWluX2diY3MgPC0gZ2JjczJbdHJhaW5fc2V0LCBdDQpzdW1tYXJ5dG9vbHM6OmRmU3VtbWFyeSh0cmFpbl9nYmNzLCANCiAgICAgICAgICAgICAgICAgICAgICAgIGdyYXBoLmNvbCA9IEYsIA0KICAgICAgICAgICAgICAgICAgICAgICAgdmFsaWQuY29sID0gRg0KKQ0KDQoNCnRlc3RfZ2JjcyA8LSBnYmNzMlt0ZXN0X3NldCwgXQ0Kc3VtbWFyeXRvb2xzOjpkZlN1bW1hcnkodGVzdF9nYmNzLCANCiAgICAgICAgICAgICAgICAgICAgICAgIGdyYXBoLmNvbCA9IEYsIA0KICAgICAgICAgICAgICAgICAgICAgICAgdmFsaWQuY29sID0gRg0KKQ0KYGBgDQoNCioqc2V0LnNlZWQqKiBpcyBhIGZ1bmN0aW9uIHRoYXQgcGVybWl0cyB0byBwcm9iYWJpbGlzdGljL3JhbmRvbSBwcm9jZXNzZXMgc3VjaCBhcyBlc3RpbWF0aW9uIHRvIGJlIHJlcHJvZHVjZWQgaW4gYSBkZXRlcm1pbmlzdGljIHdheS4gU28gZm9yIHJlcHJvZHVjaWJpbHR5IG9mIHRoZSBleHBlcmltZW50IGFuZCBvZiBvdXIgcmVzdWx0IHdlIHNldCBpdCB0byBhIGZpeGVkIGludGVnZXIgdmFsdWUgKDEyMykuDQoqKnNhbXBsZSoqIGZ1bmN0aW9uIHRha2VzIGEgc2FtcGxlIG9mIHRoZSBzcGVjaWZpZWQgc2l6ZSBmcm9tIHRoZSBlbGVtZW50cyBvZiBnYmNzMiB3aXRob3V0IHJlcGxhY2VtZW50IChkZWZhdWx0KS4NCg0K</div>
 
 
 

@@ -66,3 +66,50 @@ The dataset has the followuing attributes:
 * **censrec** : Recurrence status. 1 = Recurrence. 0 = Censored.
 * **survtime** : Time to death (days).
 * **censdead** : Censoring status. 1 = Death. 0 = Censored.
+
+## Data Cleaning
+
+```{r Normalize/Scale Continuous variables}
+gbcs2$age <- scale(gbcs2$age)
+gbcs2$menopause <- gbcs2$menopause-1
+gbcs2$hormone <- gbcs2$hormone-1
+gbcs2$size <- scale(gbcs2$size)
+gbcs2$grade1 <- ifelse(gbcs2$grade==1, 1,0)
+gbcs2$grade2 <- ifelse(gbcs2$grade==2, 1,0)
+gbcs2$grade3 <- ifelse(gbcs2$grade==3, 1,0)
+gbcs2$grade <- NULL
+gbcs2$nodes <- scale(gbcs2$nodes)
+gbcs2$prog_recp <- scale(gbcs2$prog_recp)
+gbcs2$estrg_recp <- scale(gbcs2$estrg_recp)
+```
+
+We perform some preliminary operations of data cleaning on the dataset:
+* scale is generic function whose default method centers and/or scales the columns of a numeric matrix. We apply that to age, size, nodes, prog_recp and estrg_recp attributes.
+* create a boolean attribute for the grade of tumor (1, 2, 3) then set to null the original attribute
+* change values for boolean attributes menopause, hormone (just for convenience purposes).
+
+```{r Train/Test Split}
+set.seed(123)
+train_set = sample(nrow(gbcs2), 0.8 * nrow(gbcs2))
+#str(train_set)
+test_set = setdiff(seq_len(nrow(gbcs2)), train_set)
+
+## train/test set initialization and summary
+
+train_gbcs <- gbcs2[train_set, ]
+summarytools::dfSummary(train_gbcs, 
+                        graph.col = F, 
+                        valid.col = F
+)
+
+
+test_gbcs <- gbcs2[test_set, ]
+summarytools::dfSummary(test_gbcs, 
+                        graph.col = F, 
+                        valid.col = F
+)
+```
+
+**set.seed** is a function that permits to probabilistic/random processes such as estimation to be reproduced in a deterministic way. So for reproducibilty of the experiment and of our result we set it to a fixed integer value (123).
+**sample** function takes a sample of the specified size from the elements of gbcs2 without replacement (default).
+
