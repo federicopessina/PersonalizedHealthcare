@@ -3,8 +3,66 @@ title: "Personalized Healthcare Laboratory"
 output: html_notebook
 ---
 
+# Personalized Healthcare Laboratory
 
-```{r}
-print('Hello Lab')
+## Load Packages
+
+```{r Install multiple package at a time}
+pacman::p_load(mlr3, mlr3proba, mlr3pipelines, 
+               mlr3learners, mlr3viz,mlr3tuning, 
+               mlr3benchmark, mlr3misc, mlr3extralearners,
+               R6, data.table, lgr, uuid, mlbench, digest, 
+               backports, checkmate, paradox, reticulate, 
+               keras, devtools, survival, rms, summarytools, knitr)
 ```
 
+This function is a wrapper for library and require. It checks to see if a package is installed, if not it attempts to install the package from CRAN and/or any other repository in the pacman repository list.
+
+Then we install the required packages and import into environvment.
+
+```{r Install required packages and import into environvment}
+install_github("binderh/CoxBoost")
+install.packages("mlr3verse")
+remotes::install_github("mlr-org/mlr3extralearners")
+library(mlr3extralearners)
+install_learners('surv.coxboost')
+library(mlr3learners) #ranger
+library(mlr3proba) #coxph
+```
+
+In particular we install:
+* **CoxBoost** : This package provides routines for fitting Cox models by likelihood based boosting for a single endpoint or in presence of competing risks.
+* **mlr3verse** : This package is intended to simplify both installation and loading of packages from the mlr3 ecosystem. Instead of depending on the extension packages, functions required for data analysis are re-exported, providing a thin view on the most important functionality of the mlr3 ecosystem.
+* **mlr3extralearners** : mlr3extralearners contains all learners from mlr3 that are not in mlr3learners or the core packages. mlr3extralearners contains helper functions to find where all the learners, across the mlr3verse, live and to install required packages to run these learners. See the interactive learner list for the full list of learners in the mlr3verse and the learner status page for a live build status.
+* **mlr3proba** : mlr3proba is a machine learning toolkit for making probabilistic predictions within the mlr3 ecosystem. It currently supports the tasks of Probabilistic supervised regression, Predictive survival analysis, Unconditional distribution estimation.
+
+## Load Dataset
+
+```{r German Breast Cancer Study Dataset}
+gbcs <- mlr3proba::gbcs
+
+gbcs2 <- gbcs[,c(5:12,15:16)]
+summarytools::dfSummary(gbcs2, 
+                        graph.col = F, 
+                        valid.col = F
+)
+
+head(gbcs) # print example
+```
+The dataset has the followuing attributes:
+* **id** : Identification Code
+* **diagdate** : Date of diagnosis.
+* **recdate** : Date of recurrence free survival.
+* **deathdate** : Date of death.
+* **age** : Age at diagnosis (years).
+* **menopause** : Menopausal status. 1 = Yes, 0 = No.
+* **hormone** : Hormone therapy. 1 = Yes. 0 = No.
+* **size** : Tumor size (mm).
+* **grade** : Tumor grade (1-3).
+* **nodes** : Number of nodes.
+* **prog_recp** : Number of progesterone receptors.
+* **estrg_recp** : Number of estrogen receptors.
+* **rectime** : Time to recurrence (days).
+* **censrec** : Recurrence status. 1 = Recurrence. 0 = Censored.
+* **survtime** : Time to death (days).
+* **censdead** : Censoring status. 1 = Death. 0 = Censored.

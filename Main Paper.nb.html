@@ -1749,19 +1749,140 @@ summary {
 
 
 <!-- rnb-text-begin -->
+<div id="personalized-healthcare-laboratory" class="section level1">
+<h1>Personalized Healthcare Laboratory</h1>
+<div id="load-packages" class="section level2">
+<h2>Load Packages</h2>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucHJpbnQoJ0hlbGxvIExhYicpXG5gYGAifQ== -->
-<pre class="r"><code>print(&#39;Hello Lab&#39;)</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucGFjbWFuOjpwX2xvYWQobWxyMywgbWxyM3Byb2JhLCBtbHIzcGlwZWxpbmVzLCBcbiAgICAgICAgICAgICAgIG1scjNsZWFybmVycywgbWxyM3ZpeixtbHIzdHVuaW5nLCBcbiAgICAgICAgICAgICAgIG1scjNiZW5jaG1hcmssIG1scjNtaXNjLCBtbHIzZXh0cmFsZWFybmVycyxcbiAgICAgICAgICAgICAgIFI2LCBkYXRhLnRhYmxlLCBsZ3IsIHV1aWQsIG1sYmVuY2gsIGRpZ2VzdCwgXG4gICAgICAgICAgICAgICBiYWNrcG9ydHMsIGNoZWNrbWF0ZSwgcGFyYWRveCwgcmV0aWN1bGF0ZSwgXG4gICAgICAgICAgICAgICBrZXJhcywgZGV2dG9vbHMsIHN1cnZpdmFsLCBybXMsIHN1bW1hcnl0b29scywga25pdHIpXG5gYGAifQ== -->
+<pre class="r"><code>pacman::p_load(mlr3, mlr3proba, mlr3pipelines, 
+               mlr3learners, mlr3viz,mlr3tuning, 
+               mlr3benchmark, mlr3misc, mlr3extralearners,
+               R6, data.table, lgr, uuid, mlbench, digest, 
+               backports, checkmate, paradox, reticulate, 
+               keras, devtools, survival, rms, summarytools, knitr)</code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiWzFdIFwiSGVsbG8gTGFiXCJcbiJ9 -->
-<pre><code>[1] &quot;Hello Lab&quot;</code></pre>
+<!-- rnb-output-begin eyJkYXRhIjoiSW5zdGFsbGluZyBwYWNrYWdlIGludG8g46S847ixQzovVXNlcnMvVXNlci9Eb2N1bWVudHMvUi93aW4tbGlicmFyeS80LjDjpLzjuLJcbihhcyDjpLzjuLFsaWLjpLzjuLIgaXMgdW5zcGVjaWZpZWQpXG5wYWNrYWdlIOOkvOO4sW1scjNleHRyYWxlYXJuZXJz46S847iyIGlzIG5vdCBhdmFpbGFibGUgKGZvciBSIHZlcnNpb24gNC4wLjIpY2Fubm90IG9wZW4gVVJMICdodHRwOi8vd3d3LnN0YXRzLm94LmFjLnVrL3B1Yi9SV2luL2Jpbi93aW5kb3dzL2NvbnRyaWIvNC4wL1BBQ0tBR0VTLnJkcyc6IEhUVFAgc3RhdHVzIHdhcyAnNDA0IE5vdCBGb3VuZCdjYW5ub3Qgb3BlbiBVUkwgJ2h0dHA6Ly93d3cuc3RhdHMub3guYWMudWsvcHViL1JXaW4vYmluL3dpbmRvd3MvY29udHJpYi80LjAvUEFDS0FHRVMuZ3onOiBIVFRQIHN0YXR1cyB3YXMgJzQwNCBOb3QgRm91bmQnY2Fubm90IG9wZW4gVVJMICdodHRwOi8vd3d3LnN0YXRzLm94LmFjLnVrL3B1Yi9SV2luL2Jpbi93aW5kb3dzL2NvbnRyaWIvNC4wL1BBQ0tBR0VTJzogSFRUUCBzdGF0dXMgd2FzICc0MDQgTm90IEZvdW5kJ3VuYWJsZSB0byBhY2Nlc3MgaW5kZXggZm9yIHJlcG9zaXRvcnkgaHR0cDovL3d3dy5zdGF0cy5veC5hYy51ay9wdWIvUldpbi9iaW4vd2luZG93cy9jb250cmliLzQuMDpcbiAgaW1wb3NzaWJpbGUgYXByaXJlIFVSTCAnaHR0cDovL3d3dy5zdGF0cy5veC5hYy51ay9wdWIvUldpbi9iaW4vd2luZG93cy9jb250cmliLzQuMC9QQUNLQUdFUyd0aGVyZSBpcyBubyBwYWNrYWdlIGNhbGxlZCDjpLzjuLFtbHIzZXh0cmFsZWFybmVyc+OkvOO4skVycm9yIGluIGdldChnZW5uYW1lLCBlbnZpciA9IGVudmlyKSA6IFxuICBvZ2dldHRvIFwidGVzdHRoYXRfcHJpbnRcIiBub24gdHJvdmF0b1xuRmFpbGVkIHRvIGluc3RhbGwvbG9hZDpcbm1scjNleHRyYWxlYXJuZXJzXG4ifQ== -->
+<pre><code>Installing package into 㤼㸱C:/Users/User/Documents/R/win-library/4.0㤼㸲
+(as 㤼㸱lib㤼㸲 is unspecified)
+package 㤼㸱mlr3extralearners㤼㸲 is not available (for R version 4.0.2)cannot open URL &#39;http://www.stats.ox.ac.uk/pub/RWin/bin/windows/contrib/4.0/PACKAGES.rds&#39;: HTTP status was &#39;404 Not Found&#39;cannot open URL &#39;http://www.stats.ox.ac.uk/pub/RWin/bin/windows/contrib/4.0/PACKAGES.gz&#39;: HTTP status was &#39;404 Not Found&#39;cannot open URL &#39;http://www.stats.ox.ac.uk/pub/RWin/bin/windows/contrib/4.0/PACKAGES&#39;: HTTP status was &#39;404 Not Found&#39;unable to access index for repository http://www.stats.ox.ac.uk/pub/RWin/bin/windows/contrib/4.0:
+  impossibile aprire URL &#39;http://www.stats.ox.ac.uk/pub/RWin/bin/windows/contrib/4.0/PACKAGES&#39;there is no package called 㤼㸱mlr3extralearners㤼㸲Error in get(genname, envir = envir) : 
+  oggetto &quot;testthat_print&quot; non trovato
+Failed to install/load:
+mlr3extralearners</code></pre>
 <!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
+<p>This function is a wrapper for library and require. It checks to see if a package is installed, if not it attempts to install the package from CRAN and/or any other repository in the pacman repository list.</p>
+<p>Then we install the required packages and import into environvment.</p>
 <!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuaW5zdGFsbF9naXRodWIoXCJiaW5kZXJoL0NveEJvb3N0XCIpXG5gYGAifQ== -->
+<pre class="r"><code>install_github(&quot;binderh/CoxBoost&quot;)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiRXJyb3IgaW4gaW5zdGFsbF9naXRodWIoXCJiaW5kZXJoL0NveEJvb3N0XCIpIDogXG4gIG5vbiB0cm92byBsYSBmdW56aW9uZSBcImluc3RhbGxfZ2l0aHViXCJcbiJ9 -->
+<pre><code>Error in install_github(&quot;binderh/CoxBoost&quot;) : 
+  non trovo la funzione &quot;install_github&quot;</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>In particular we install: * <strong>CoxBoost</strong> : This package provides routines for fitting Cox models by likelihood based boosting for a single endpoint or in presence of competing risks. * <strong>mlr3verse</strong> : This package is intended to simplify both installation and loading of packages from the mlr3 ecosystem. Instead of depending on the extension packages, functions required for data analysis are re-exported, providing a thin view on the most important functionality of the mlr3 ecosystem. * <strong>mlr3extralearners</strong> : mlr3extralearners contains all learners from mlr3 that are not in mlr3learners or the core packages. mlr3extralearners contains helper functions to find where all the learners, across the mlr3verse, live and to install required packages to run these learners. See the interactive learner list for the full list of learners in the mlr3verse and the learner status page for a live build status. * <strong>mlr3proba</strong> : mlr3proba is a machine learning toolkit for making probabilistic predictions within the mlr3 ecosystem. It currently supports the tasks of Probabilistic supervised regression, Predictive survival analysis, Unconditional distribution estimation.</p>
+</div>
+<div id="load-dataset" class="section level2">
+<h2>Load Dataset</h2>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZ2JjcyA8LSBtbHIzcHJvYmE6OmdiY3NcbmBgYCJ9 -->
+<pre class="r"><code>gbcs &lt;- mlr3proba::gbcs</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiUmVnaXN0ZXJlZCBTMyBtZXRob2Qgb3ZlcndyaXR0ZW4gYnkgJ2RhdGEudGFibGUnOlxuICBtZXRob2QgICAgICAgICAgIGZyb21cbiAgcHJpbnQuZGF0YS50YWJsZSAgICAgXG4ifQ== -->
+<pre><code>Registered S3 method overwritten by &#39;data.table&#39;:
+  method           from
+  print.data.table     </code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZ2JjczIgPC0gZ2Jjc1ssYyg1OjEyLDE1OjE2KV1cbnN1bW1hcnl0b29sczo6ZGZTdW1tYXJ5KGdiY3MyLCBcbiAgICAgICAgICAgICAgICAgICAgICAgIGdyYXBoLmNvbCA9IEYsIFxuICAgICAgICAgICAgICAgICAgICAgICAgdmFsaWQuY29sID0gRlxuKVxuYGBgIn0= -->
+<pre class="r"><code>gbcs2 &lt;- gbcs[,c(5:12,15:16)]
+summarytools::dfSummary(gbcs2, 
+                        graph.col = F, 
+                        valid.col = F
+)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiRGF0YSBGcmFtZSBTdW1tYXJ5ICBcbmdiY3MyICBcbkRpbWVuc2lvbnM6IDY4NiB4IDEwICBcbkR1cGxpY2F0ZXM6IDAgIFxuXG4tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLVxuTm8gICBWYXJpYWJsZSAgICAgIFN0YXRzIC8gVmFsdWVzICAgICAgICAgICAgICAgIEZyZXFzICglIG9mIFZhbGlkKSAgICBNaXNzaW5nICBcbi0tLS0gLS0tLS0tLS0tLS0tLSAtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLSAtLS0tLS0tLS0tLS0tLS0tLS0tLS0gLS0tLS0tLS0tXG4xICAgIGFnZSAgICAgICAgICAgTWVhbiAoc2QpIDogNTMuMSAoMTAuMSkgICAgICAgNTQgZGlzdGluY3QgdmFsdWVzICAgIDAgICAgICAgIFxuICAgICBbbnVtZXJpY10gICAgIG1pbiA8IG1lZCA8IG1heDogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAoMC4wJSkgICBcbiAgICAgICAgICAgICAgICAgICAyMSA8IDUzIDwgODAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgXG4gICAgICAgICAgICAgICAgICAgSVFSIChDVikgOiAxNSAoMC4yKSAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIFxuXG4yICAgIG1lbm9wYXVzZSAgICAgTWluICA6IDEgICAgICAgICAgICAgICAgICAgICAgMSA6IDI5MCAoNDIuMyUpICAgICAgIDAgICAgICAgIFxuICAgICBbaW50ZWdlcl0gICAgIE1lYW4gOiAxLjYgICAgICAgICAgICAgICAgICAgIDIgOiAzOTYgKDU3LjclKSAgICAgICAoMC4wJSkgICBcbiAgICAgICAgICAgICAgICAgICBNYXggIDogMiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgXG5cbjMgICAgaG9ybW9uZSAgICAgICBNaW4gIDogMSAgICAgICAgICAgICAgICAgICAgICAxIDogNDQwICg2NC4xJSkgICAgICAgMCAgICAgICAgXG4gICAgIFtpbnRlZ2VyXSAgICAgTWVhbiA6IDEuNCAgICAgICAgICAgICAgICAgICAgMiA6IDI0NiAoMzUuOSUpICAgICAgICgwLjAlKSAgIFxuICAgICAgICAgICAgICAgICAgIE1heCAgOiAyICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBcblxuNCAgICBzaXplICAgICAgICAgIE1lYW4gKHNkKSA6IDI5LjMgKDE0LjMpICAgICAgIDU4IGRpc3RpbmN0IHZhbHVlcyAgICAwICAgICAgICBcbiAgICAgW251bWVyaWNdICAgICBtaW4gPCBtZWQgPCBtYXg6ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgKDAuMCUpICAgXG4gICAgICAgICAgICAgICAgICAgMyA8IDI1IDwgMTIwICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIFxuICAgICAgICAgICAgICAgICAgIElRUiAoQ1YpIDogMTUgKDAuNSkgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBcblxuNSAgICBncmFkZSAgICAgICAgIE1lYW4gKHNkKSA6IDIuMSAoMC42KSAgICAgICAgIDEgOiAgODEgKDExLjglKSAgICAgICAwICAgICAgICBcbiAgICAgW2ludGVnZXJdICAgICBtaW4gPCBtZWQgPCBtYXg6ICAgICAgICAgICAgICAyIDogNDQ0ICg2NC43JSkgICAgICAgKDAuMCUpICAgXG4gICAgICAgICAgICAgICAgICAgMSA8IDIgPCAzICAgICAgICAgICAgICAgICAgICAgMyA6IDE2MSAoMjMuNSUpICAgICAgICAgICAgICAgIFxuICAgICAgICAgICAgICAgICAgIElRUiAoQ1YpIDogMCAoMC4zKSAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBcblxuNiAgICBub2RlcyAgICAgICAgIE1lYW4gKHNkKSA6IDUgKDUuNSkgICAgICAgICAgIDMwIGRpc3RpbmN0IHZhbHVlcyAgICAwICAgICAgICBcbiAgICAgW2ludGVnZXJdICAgICBtaW4gPCBtZWQgPCBtYXg6ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgKDAuMCUpICAgXG4gICAgICAgICAgICAgICAgICAgMSA8IDMgPCA1MSAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIFxuICAgICAgICAgICAgICAgICAgIElRUiAoQ1YpIDogNiAoMS4xKSAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBcblxuNyAgICBwcm9nX3JlY3AgICAgIE1lYW4gKHNkKSA6IDExMCAoMjAyLjMpICAgICAgIDI0MiBkaXN0aW5jdCB2YWx1ZXMgICAwICAgICAgICBcbiAgICAgW251bWVyaWNdICAgICBtaW4gPCBtZWQgPCBtYXg6ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgKDAuMCUpICAgXG4gICAgICAgICAgICAgICAgICAgMCA8IDMyLjUgPCAyMzgwICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIFxuICAgICAgICAgICAgICAgICAgIElRUiAoQ1YpIDogMTI0LjggKDEuOCkgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBcblxuOCAgICBlc3RyZ19yZWNwICAgIE1lYW4gKHNkKSA6IDk2LjMgKDE1My4xKSAgICAgIDI0NCBkaXN0aW5jdCB2YWx1ZXMgICAwICAgICAgICBcbiAgICAgW251bWVyaWNdICAgICBtaW4gPCBtZWQgPCBtYXg6ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgKDAuMCUpICAgXG4gICAgICAgICAgICAgICAgICAgMCA8IDM2IDwgMTE0NCAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIFxuICAgICAgICAgICAgICAgICAgIElRUiAoQ1YpIDogMTA2ICgxLjYpICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBcblxuOSAgICBzdXJ2dGltZSAgICAgIE1lYW4gKHNkKSA6IDEzMjAuNiAoNjE5LjIpICAgIDU3NCBkaXN0aW5jdCB2YWx1ZXMgICAwICAgICAgICBcbiAgICAgW251bWVyaWNdICAgICBtaW4gPCBtZWQgPCBtYXg6ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgKDAuMCUpICAgXG4gICAgICAgICAgICAgICAgICAgOCA8IDEzMzggPCAyNjY4ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIFxuICAgICAgICAgICAgICAgICAgIElRUiAoQ1YpIDogMTAyNiAoMC41KSAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBcblxuMTAgICBjZW5zZGVhZCAgICAgIE1pbiAgOiAwICAgICAgICAgICAgICAgICAgICAgIDAgOiA1MTUgKDc1LjElKSAgICAgICAwICAgICAgICBcbiAgICAgW2ludGVnZXJdICAgICBNZWFuIDogMC4yICAgICAgICAgICAgICAgICAgICAxIDogMTcxICgyNC45JSkgICAgICAgKDAuMCUpICAgXG4gICAgICAgICAgICAgICAgICAgTWF4ICA6IDEgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIFxuLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS1cbiJ9 -->
+<pre><code>Data Frame Summary  
+gbcs2  
+Dimensions: 686 x 10  
+Duplicates: 0  
 
-<div id="rmd-source-code">LS0tDQp0aXRsZTogIlBlcnNvbmFsaXplZCBIZWFsdGhjYXJlIExhYm9yYXRvcnkiDQpvdXRwdXQ6IGh0bWxfbm90ZWJvb2sNCi0tLQ0KDQoNCmBgYHtyfQ0KcHJpbnQoJ0hlbGxvIExhYicpDQpgYGANCg0K</div>
+--------------------------------------------------------------------------------
+No   Variable      Stats / Values                Freqs (% of Valid)    Missing  
+---- ------------- ----------------------------- --------------------- ---------
+1    age           Mean (sd) : 53.1 (10.1)       54 distinct values    0        
+     [numeric]     min &lt; med &lt; max:                                    (0.0%)   
+                   21 &lt; 53 &lt; 80                                                 
+                   IQR (CV) : 15 (0.2)                                          
+
+2    menopause     Min  : 1                      1 : 290 (42.3%)       0        
+     [integer]     Mean : 1.6                    2 : 396 (57.7%)       (0.0%)   
+                   Max  : 2                                                     
+
+3    hormone       Min  : 1                      1 : 440 (64.1%)       0        
+     [integer]     Mean : 1.4                    2 : 246 (35.9%)       (0.0%)   
+                   Max  : 2                                                     
+
+4    size          Mean (sd) : 29.3 (14.3)       58 distinct values    0        
+     [numeric]     min &lt; med &lt; max:                                    (0.0%)   
+                   3 &lt; 25 &lt; 120                                                 
+                   IQR (CV) : 15 (0.5)                                          
+
+5    grade         Mean (sd) : 2.1 (0.6)         1 :  81 (11.8%)       0        
+     [integer]     min &lt; med &lt; max:              2 : 444 (64.7%)       (0.0%)   
+                   1 &lt; 2 &lt; 3                     3 : 161 (23.5%)                
+                   IQR (CV) : 0 (0.3)                                           
+
+6    nodes         Mean (sd) : 5 (5.5)           30 distinct values    0        
+     [integer]     min &lt; med &lt; max:                                    (0.0%)   
+                   1 &lt; 3 &lt; 51                                                   
+                   IQR (CV) : 6 (1.1)                                           
+
+7    prog_recp     Mean (sd) : 110 (202.3)       242 distinct values   0        
+     [numeric]     min &lt; med &lt; max:                                    (0.0%)   
+                   0 &lt; 32.5 &lt; 2380                                              
+                   IQR (CV) : 124.8 (1.8)                                       
+
+8    estrg_recp    Mean (sd) : 96.3 (153.1)      244 distinct values   0        
+     [numeric]     min &lt; med &lt; max:                                    (0.0%)   
+                   0 &lt; 36 &lt; 1144                                                
+                   IQR (CV) : 106 (1.6)                                         
+
+9    survtime      Mean (sd) : 1320.6 (619.2)    574 distinct values   0        
+     [numeric]     min &lt; med &lt; max:                                    (0.0%)   
+                   8 &lt; 1338 &lt; 2668                                              
+                   IQR (CV) : 1026 (0.5)                                        
+
+10   censdead      Min  : 0                      0 : 515 (75.1%)       0        
+     [integer]     Mean : 0.2                    1 : 171 (24.9%)       (0.0%)   
+                   Max  : 1                                                     
+--------------------------------------------------------------------------------</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuaGVhZChnYmNzKSAjIHByaW50IGV4YW1wbGVcbmBgYCJ9 -->
+<pre class="r"><code>head(gbcs) # print example</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-frame-begin eyJtZXRhZGF0YSI6eyJjbGFzc2VzIjpbImRhdGEuZnJhbWUiXSwibnJvdyI6NiwibmNvbCI6MTZ9LCJyZGYiOiJINHNJQUFBQUFBQUFCcVZVVDJzVU1SUlBaM2EyM1lHV0JSVXZIcFllUE1taTJ3cDZrZEZkcUlpSDRvSXNYalNkaWRPQm5jeVFaS3YyMU8rZ2VQUGZCeEFSNnFWYThLTDRBYng0OGVTSDhDRFZaTi9Ma0JtRUNnYkNMKys5dk44djc1SGsxbWl5Rms1Q1FvaFBXc1FqZnFDWHBEM2N2REM0T0NDazVXbHJRVWM2QmgvcVhTZjBvcXZuc3RrMkR4TGl6ZFAxYmowRDhQc3JCcVA5NzRhT1JPKytJWjRDM0grTitCYnhNNEZSRXd6aUtaVVNCYTJ6TmFLS2FUeXFSQTVPQThsN0JuaHdFc1d1b3Y4bjRJZXhJK0w5UHBiMzhBdmtIYjVCM2svL3lVdUFkd2k3b3h1SUczdUFJN1EzRWEvdklXK3QyZTcwY0I0WEI5MEI4cTRqWGtHOGhMaUdlTlBLVnJ5K3crZWlqUWVPcHU4ZzZOS1h3RHZHT25mdkFWNXU2TzVFVmhmeTdvQWRuY1A0YmJUUG9yMWE3MWVWOStRSCtKK2VCM3o4QzNBTDlaK2RBWHkrM3F6VDdaMDdnUGZWVjhoN01VSCtqLy9LYTBlRHQzN1pPYzJadmV4ZGRIcFpncXVsSktOcFlxNFMySXVDeFk3WlNSaFYyNDdEcDJrVnl4a3ZTanFUVmU1MklmS0NXN01sczEyN0RsSkJrOHJnUmFLUGhDeWxLTks3V3JWRVI4aWtFaldQT1pQSzhrb21abHhxbDYxQXpzU09FMTR5WVgzc3BOR0lqaWdlOUcwelRBYzk2Sy9wNUY5ZldLakxwdjM3UXFlUStUdXIwUzBXcGNvS3Jzazg4M2NGamVRRjBYQ3NiakNSVTk2N0poaVZxamVrUEdhaU4xYXo1RkZQUDJVcW1US2F6azFaUm13NzZ5NmN3cmRuRFpDOXpYaWFWWjBQcG5TTFRkRlkwWFhQeSs2WEl1UEtGcWU5c3E4S1JlMitNQzZtMWdQZnl0RWZ4VHlMb01ZRkFBQT0ifQ== -->
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["id"],"name":[1],"type":["int"],"align":["right"]},{"label":["diagdate"],"name":[2],"type":["date"],"align":["right"]},{"label":["recdate"],"name":[3],"type":["date"],"align":["right"]},{"label":["deathdate"],"name":[4],"type":["date"],"align":["right"]},{"label":["age"],"name":[5],"type":["dbl"],"align":["right"]},{"label":["menopause"],"name":[6],"type":["int"],"align":["right"]},{"label":["hormone"],"name":[7],"type":["int"],"align":["right"]},{"label":["size"],"name":[8],"type":["dbl"],"align":["right"]},{"label":["grade"],"name":[9],"type":["int"],"align":["right"]},{"label":["nodes"],"name":[10],"type":["int"],"align":["right"]},{"label":["prog_recp"],"name":[11],"type":["dbl"],"align":["right"]},{"label":["estrg_recp"],"name":[12],"type":["dbl"],"align":["right"]},{"label":["rectime"],"name":[13],"type":["dbl"],"align":["right"]},{"label":["censrec"],"name":[14],"type":["int"],"align":["right"]},{"label":["survtime"],"name":[15],"type":["dbl"],"align":["right"]},{"label":["censdead"],"name":[16],"type":["int"],"align":["right"]}],"data":[{"1":"1","2":"1984-08-17","3":"1988-04-15","4":"1990-11-16","5":"38","6":"1","7":"1","8":"18","9":"3","10":"5","11":"141","12":"105","13":"1337","14":"1","15":"2282","16":"0","_rn_":"1"},{"1":"2","2":"1985-04-25","3":"1989-03-15","4":"1990-10-22","5":"52","6":"1","7":"1","8":"20","9":"1","10":"1","11":"78","12":"14","13":"1420","14":"1","15":"2006","16":"0","_rn_":"2"},{"1":"3","2":"1984-10-11","3":"1988-04-12","4":"1988-10-06","5":"47","6":"1","7":"1","8":"30","9":"2","10":"1","11":"422","12":"89","13":"1279","14":"1","15":"1456","16":"1","_rn_":"3"},{"1":"4","2":"1984-06-29","3":"1984-11-24","4":"1984-11-24","5":"40","6":"1","7":"1","8":"24","9":"1","10":"3","11":"25","12":"11","13":"148","14":"0","15":"148","16":"0","_rn_":"4"},{"1":"5","2":"1984-07-03","3":"1989-08-09","4":"1989-08-09","5":"64","6":"2","7":"2","8":"19","9":"2","10":"1","11":"19","12":"9","13":"1863","14":"0","15":"1863","16":"0","_rn_":"5"},{"1":"6","2":"1984-07-24","3":"1989-11-08","4":"1989-11-08","5":"49","6":"2","7":"2","8":"56","9":"1","10":"3","11":"356","12":"64","13":"1933","14":"0","15":"1933","16":"0","_rn_":"6"}],"options":{"columns":{"min":{},"max":[10],"total":[16]},"rows":{"min":[10],"max":[10],"total":[6]},"pages":{}}}
+  </script>
+</div>
+<!-- rnb-frame-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>The dataset has the followuing attributes: * <strong>id</strong> : Identification Code * <strong>diagdate</strong> : Date of diagnosis. * <strong>recdate</strong> : Date of recurrence free survival. * <strong>deathdate</strong> : Date of death. * <strong>age</strong> : Age at diagnosis (years). * <strong>menopause</strong> : Menopausal status. 1 = Yes, 0 = No. * <strong>hormone</strong> : Hormone therapy. 1 = Yes. 0 = No. * <strong>size</strong> : Tumor size (mm). * <strong>grade</strong> : Tumor grade (1-3). * <strong>nodes</strong> : Number of nodes. * <strong>prog_recp</strong> : Number of progesterone receptors. * <strong>estrg_recp</strong> : Number of estrogen receptors. * <strong>rectime</strong> : Time to recurrence (days). * <strong>censrec</strong> : Recurrence status. 1 = Recurrence. 0 = Censored. * <strong>survtime</strong> : Time to death (days). * <strong>censdead</strong> : Censoring status. 1 = Death. 0 = Censored.</p>
+<!-- rnb-text-end -->
+</div>
+</div>
+
+<div id="rmd-source-code">LS0tDQp0aXRsZTogIlBlcnNvbmFsaXplZCBIZWFsdGhjYXJlIExhYm9yYXRvcnkiDQpvdXRwdXQ6IGh0bWxfbm90ZWJvb2sNCi0tLQ0KDQojIFBlcnNvbmFsaXplZCBIZWFsdGhjYXJlIExhYm9yYXRvcnkNCg0KIyMgTG9hZCBQYWNrYWdlcw0KDQpgYGB7ciBJbnN0YWxsIG11bHRpcGxlIHBhY2thZ2UgYXQgYSB0aW1lfQ0KcGFjbWFuOjpwX2xvYWQobWxyMywgbWxyM3Byb2JhLCBtbHIzcGlwZWxpbmVzLCANCiAgICAgICAgICAgICAgIG1scjNsZWFybmVycywgbWxyM3ZpeixtbHIzdHVuaW5nLCANCiAgICAgICAgICAgICAgIG1scjNiZW5jaG1hcmssIG1scjNtaXNjLCBtbHIzZXh0cmFsZWFybmVycywNCiAgICAgICAgICAgICAgIFI2LCBkYXRhLnRhYmxlLCBsZ3IsIHV1aWQsIG1sYmVuY2gsIGRpZ2VzdCwgDQogICAgICAgICAgICAgICBiYWNrcG9ydHMsIGNoZWNrbWF0ZSwgcGFyYWRveCwgcmV0aWN1bGF0ZSwgDQogICAgICAgICAgICAgICBrZXJhcywgZGV2dG9vbHMsIHN1cnZpdmFsLCBybXMsIHN1bW1hcnl0b29scywga25pdHIpDQpgYGANCg0KVGhpcyBmdW5jdGlvbiBpcyBhIHdyYXBwZXIgZm9yIGxpYnJhcnkgYW5kIHJlcXVpcmUuIEl0IGNoZWNrcyB0byBzZWUgaWYgYSBwYWNrYWdlIGlzIGluc3RhbGxlZCwgaWYgbm90IGl0IGF0dGVtcHRzIHRvIGluc3RhbGwgdGhlIHBhY2thZ2UgZnJvbSBDUkFOIGFuZC9vciBhbnkgb3RoZXIgcmVwb3NpdG9yeSBpbiB0aGUgcGFjbWFuIHJlcG9zaXRvcnkgbGlzdC4NCg0KVGhlbiB3ZSBpbnN0YWxsIHRoZSByZXF1aXJlZCBwYWNrYWdlcyBhbmQgaW1wb3J0IGludG8gZW52aXJvbnZtZW50Lg0KDQpgYGB7ciBJbnN0YWxsIHJlcXVpcmVkIHBhY2thZ2VzIGFuZCBpbXBvcnQgaW50byBlbnZpcm9udm1lbnR9DQppbnN0YWxsX2dpdGh1YigiYmluZGVyaC9Db3hCb29zdCIpDQppbnN0YWxsLnBhY2thZ2VzKCJtbHIzdmVyc2UiKQ0KcmVtb3Rlczo6aW5zdGFsbF9naXRodWIoIm1sci1vcmcvbWxyM2V4dHJhbGVhcm5lcnMiKQ0KbGlicmFyeShtbHIzZXh0cmFsZWFybmVycykNCmluc3RhbGxfbGVhcm5lcnMoJ3N1cnYuY294Ym9vc3QnKQ0KbGlicmFyeShtbHIzbGVhcm5lcnMpICNyYW5nZXINCmxpYnJhcnkobWxyM3Byb2JhKSAjY294cGgNCmBgYA0KDQpJbiBwYXJ0aWN1bGFyIHdlIGluc3RhbGw6DQoqICoqQ294Qm9vc3QqKiA6IFRoaXMgcGFja2FnZSBwcm92aWRlcyByb3V0aW5lcyBmb3IgZml0dGluZyBDb3ggbW9kZWxzIGJ5IGxpa2VsaWhvb2QgYmFzZWQgYm9vc3RpbmcgZm9yIGEgc2luZ2xlIGVuZHBvaW50IG9yIGluIHByZXNlbmNlIG9mIGNvbXBldGluZyByaXNrcy4NCiogKiptbHIzdmVyc2UqKiA6IFRoaXMgcGFja2FnZSBpcyBpbnRlbmRlZCB0byBzaW1wbGlmeSBib3RoIGluc3RhbGxhdGlvbiBhbmQgbG9hZGluZyBvZiBwYWNrYWdlcyBmcm9tIHRoZSBtbHIzIGVjb3N5c3RlbS4gSW5zdGVhZCBvZiBkZXBlbmRpbmcgb24gdGhlIGV4dGVuc2lvbiBwYWNrYWdlcywgZnVuY3Rpb25zIHJlcXVpcmVkIGZvciBkYXRhIGFuYWx5c2lzIGFyZSByZS1leHBvcnRlZCwgcHJvdmlkaW5nIGEgdGhpbiB2aWV3IG9uIHRoZSBtb3N0IGltcG9ydGFudCBmdW5jdGlvbmFsaXR5IG9mIHRoZSBtbHIzIGVjb3N5c3RlbS4NCiogKiptbHIzZXh0cmFsZWFybmVycyoqIDogbWxyM2V4dHJhbGVhcm5lcnMgY29udGFpbnMgYWxsIGxlYXJuZXJzIGZyb20gbWxyMyB0aGF0IGFyZSBub3QgaW4gbWxyM2xlYXJuZXJzIG9yIHRoZSBjb3JlIHBhY2thZ2VzLiBtbHIzZXh0cmFsZWFybmVycyBjb250YWlucyBoZWxwZXIgZnVuY3Rpb25zIHRvIGZpbmQgd2hlcmUgYWxsIHRoZSBsZWFybmVycywgYWNyb3NzIHRoZSBtbHIzdmVyc2UsIGxpdmUgYW5kIHRvIGluc3RhbGwgcmVxdWlyZWQgcGFja2FnZXMgdG8gcnVuIHRoZXNlIGxlYXJuZXJzLiBTZWUgdGhlIGludGVyYWN0aXZlIGxlYXJuZXIgbGlzdCBmb3IgdGhlIGZ1bGwgbGlzdCBvZiBsZWFybmVycyBpbiB0aGUgbWxyM3ZlcnNlIGFuZCB0aGUgbGVhcm5lciBzdGF0dXMgcGFnZSBmb3IgYSBsaXZlIGJ1aWxkIHN0YXR1cy4NCiogKiptbHIzcHJvYmEqKiA6IG1scjNwcm9iYSBpcyBhIG1hY2hpbmUgbGVhcm5pbmcgdG9vbGtpdCBmb3IgbWFraW5nIHByb2JhYmlsaXN0aWMgcHJlZGljdGlvbnMgd2l0aGluIHRoZSBtbHIzIGVjb3N5c3RlbS4gSXQgY3VycmVudGx5IHN1cHBvcnRzIHRoZSB0YXNrcyBvZiBQcm9iYWJpbGlzdGljIHN1cGVydmlzZWQgcmVncmVzc2lvbiwgUHJlZGljdGl2ZSBzdXJ2aXZhbCBhbmFseXNpcywgVW5jb25kaXRpb25hbCBkaXN0cmlidXRpb24gZXN0aW1hdGlvbi4NCg0KIyMgTG9hZCBEYXRhc2V0DQoNCmBgYHtyIEdlcm1hbiBCcmVhc3QgQ2FuY2VyIFN0dWR5IERhdGFzZXR9DQpnYmNzIDwtIG1scjNwcm9iYTo6Z2Jjcw0KDQpnYmNzMiA8LSBnYmNzWyxjKDU6MTIsMTU6MTYpXQ0Kc3VtbWFyeXRvb2xzOjpkZlN1bW1hcnkoZ2JjczIsIA0KICAgICAgICAgICAgICAgICAgICAgICAgZ3JhcGguY29sID0gRiwgDQogICAgICAgICAgICAgICAgICAgICAgICB2YWxpZC5jb2wgPSBGDQopDQoNCmhlYWQoZ2JjcykgIyBwcmludCBleGFtcGxlDQpgYGANClRoZSBkYXRhc2V0IGhhcyB0aGUgZm9sbG93dWluZyBhdHRyaWJ1dGVzOg0KKiAqKmlkKiogOiBJZGVudGlmaWNhdGlvbiBDb2RlDQoqICoqZGlhZ2RhdGUqKiA6IERhdGUgb2YgZGlhZ25vc2lzLg0KKiAqKnJlY2RhdGUqKiA6IERhdGUgb2YgcmVjdXJyZW5jZSBmcmVlIHN1cnZpdmFsLg0KKiAqKmRlYXRoZGF0ZSoqIDogRGF0ZSBvZiBkZWF0aC4NCiogKiphZ2UqKiA6IEFnZSBhdCBkaWFnbm9zaXMgKHllYXJzKS4NCiogKiptZW5vcGF1c2UqKiA6IE1lbm9wYXVzYWwgc3RhdHVzLiAxID0gWWVzLCAwID0gTm8uDQoqICoqaG9ybW9uZSoqIDogSG9ybW9uZSB0aGVyYXB5LiAxID0gWWVzLiAwID0gTm8uDQoqICoqc2l6ZSoqIDogVHVtb3Igc2l6ZSAobW0pLg0KKiAqKmdyYWRlKiogOiBUdW1vciBncmFkZSAoMS0zKS4NCiogKipub2RlcyoqIDogTnVtYmVyIG9mIG5vZGVzLg0KKiAqKnByb2dfcmVjcCoqIDogTnVtYmVyIG9mIHByb2dlc3Rlcm9uZSByZWNlcHRvcnMuDQoqICoqZXN0cmdfcmVjcCoqIDogTnVtYmVyIG9mIGVzdHJvZ2VuIHJlY2VwdG9ycy4NCiogKipyZWN0aW1lKiogOiBUaW1lIHRvIHJlY3VycmVuY2UgKGRheXMpLg0KKiAqKmNlbnNyZWMqKiA6IFJlY3VycmVuY2Ugc3RhdHVzLiAxID0gUmVjdXJyZW5jZS4gMCA9IENlbnNvcmVkLg0KKiAqKnN1cnZ0aW1lKiogOiBUaW1lIHRvIGRlYXRoIChkYXlzKS4NCiogKipjZW5zZGVhZCoqIDogQ2Vuc29yaW5nIHN0YXR1cy4gMSA9IERlYXRoLiAwID0gQ2Vuc29yZWQuDQo=</div>
 
 
 
