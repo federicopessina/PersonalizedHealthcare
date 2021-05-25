@@ -98,6 +98,7 @@ abline(h=.5)
 
 # Cox Model
 
+# Fit the model
 fit <- coxph(Surv(survtime, censdead) ~ age + menopause + hormone + size + grade1 + grade2 + nodes + prog_recp + estrg_recp, data = train_gbcs)
 summary(fit)
 
@@ -107,6 +108,7 @@ check_PH
 ND <- data.frame(age = 0, menopause = 1, hormone = 2,
                  size = 0, grade1 = c(1,0,0), grade2=c(0,1,0), grade3=c(0,0,1), nodes = 0, prog_recp=0, estrg_recp=0)
 
+# Fit survival function
 surv_probs_Cox <- survfit(fit, newdata = ND)
 surv_probs_Cox
 
