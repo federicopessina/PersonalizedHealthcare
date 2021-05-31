@@ -203,15 +203,16 @@ rf.pred <- rf$predict(test_gbcs)
 rf.pred$score()
 #Check the different Hyperparameter of the learner (Random Forest)
 rf$param_set
-#Create a search space for parameters min.node.size and alpha
+#Create a search space for parameters min.node.size, mtry, sample.fraction
 search_space = ps(
   min.node.size = p_int(lower = 1, upper = 6),
-  kernel = p_fct(levels = c("polynomial", "radial")),
-  alpha = p_dbl(lower = 0, upper = 1)
+  mtry = p_int(lower = 2, upper = 10), 
+  sample.fraction = p_dbl(lower = 0.5, upper = 0.7)
+
 )
 search_space
 #Resampling Strategy
-hout = rsmp("cv", folds = 10)
+hout = rsmp("cv", folds = 5)
 #Performance measure (same used by professor)
 measure = msr("surv.cindex")
 #Termination Strategy
@@ -226,7 +227,7 @@ instance = TuningInstanceSingleCrit$new(
   terminator = evalsTerm
 )
 #Type of optimization
-tuner = tnr("random_search")
+tuner = tnr("grid_search", resolution = 5)
 #Start the tuning
 tuner$optimize(instance)
 #Best parameters
@@ -235,12 +236,12 @@ instance$result_learner_param_vals
 instance$result_y
 #Archive of the tuning
 as.data.table(instance$archive)
-#Setting the best parameters to the learner
+#Setting the best parameters to the learner 
 rf$param_set$values = instance$result_learner_param_vals
 #Retraining the learner
 rf$train(task_gbcs)
 rf$oob_error()
-#Prediction Accuracy
+#Prediction Accuracy (0.7244294) 
 rf$model
 rf.pred <- rf$predict(test_gbcs)
 rf.pred$score()
