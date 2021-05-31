@@ -1,7 +1,9 @@
 ---
 title: "Personalized Healthcare Laboratory"
 output:
+  pdf_document: default
   html_notebook: default
+  word_document: default
 ---
 
 # Personalized Healthcare Laboratory
@@ -207,15 +209,15 @@ tuner = tnr("grid_search", resolution = 10)
 ```{r Start the tuning}
 tuner$optimize(instance)
 ```
-```{r Best parameters}
-instance$result_learner_param_vals
+```{r Instance resul learners vala}
+print(instance$result_learner_param_vals)
 ```
 
-```{r Best performance}
-instance$result_y
+```{r Best performance result}
+print(instance$result_y)
 ```
 
-```{r Archive of the tuning}
+```{r Archive tuning}
 as.data.table(instance$archive)
 ```
 
@@ -226,7 +228,7 @@ svm$param_set$values = instance$result_learner_param_vals
 svm$train(task_gbcs)
 ```
 
-```{r Prediction Accuracy}
+```{r Prediction Accuracy model}
 svm$model
 ```
 

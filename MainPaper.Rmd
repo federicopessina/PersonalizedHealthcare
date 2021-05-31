@@ -1,0 +1,330 @@
+---
+title: "Personalized Healthcare Laboratory"
+output:
+  pdf_document: default
+  html_notebook: default
+  word_document: default
+---
+
+# Personalized Healthcare Laboratory
+
+## Load Packages
+
+```{r Install multiple package at a time}
+pacman::p_load(mlr3, mlr3proba, mlr3pipelines, 
+               mlr3learners, mlr3viz,mlr3tuning, 
+               mlr3benchmark, mlr3misc, mlr3extralearners,
+               R6, data.table, lgr, uuid, mlbench, digest, 
+               backports, checkmate, paradox, reticulate, 
+               keras, devtools, survival, rms, summarytools, knitr)
+```
+
+This function is a wrapper for library and require. It checks to see if a package is installed, if not it attempts to install the package from CRAN and/or any other repository in the pacman repository list.
+
+Then we install the required packages and import into environvment.
+
+```{r Install required packages and import into environvment}
+install_github("binderh/CoxBoost")
+install.packages("mlr3verse")
+remotes::install_github("mlr-org/mlr3extralearners")
+library(mlr3extralearners)
+install_learners('surv.coxboost')
+library(mlr3learners) #ranger
+library(mlr3proba) #coxph
+```
+
+In particular we install:
+* **CoxBoost** : This package provides routines for fitting Cox models by likelihood based boosting for a single endpoint or in presence of competing risks.
+* **mlr3verse** : This package is intended to simplify both installation and loading of packages from the mlr3 ecosystem. Instead of depending on the extension packages, functions required for data analysis are re-exported, providing a thin view on the most important functionality of the mlr3 ecosystem.
+* **mlr3extralearners** : mlr3extralearners contains all learners from mlr3 that are not in mlr3learners or the core packages. mlr3extralearners contains helper functions to find where all the learners, across the mlr3verse, live and to install required packages to run these learners. See the interactive learner list for the full list of learners in the mlr3verse and the learner status page for a live build status.
+* **mlr3proba** : mlr3proba is a machine learning toolkit for making probabilistic predictions within the mlr3 ecosystem. It currently supports the tasks of Probabilistic supervised regression, Predictive survival analysis, Unconditional distribution estimation.
+
+## Load Dataset
+
+```{r German Breast Cancer Study Dataset}
+gbcs <- mlr3proba::gbcs
+
+gbcs2 <- gbcs[,c(5:12,15:16)]
+summarytools::dfSummary(gbcs2, 
+                        graph.col = F, 
+                        valid.col = F
+)
+
+head(gbcs) # print example
+```
+The dataset has the followuing attributes:
+* **id** : Identification Code
+* **diagdate** : Date of diagnosis.
+* **recdate** : Date of recurrence free survival.
+* **deathdate** : Date of death.
+* **age** : Age at diagnosis (years).
+* **menopause** : Menopausal status. 1 = Yes, 0 = No.
+* **hormone** : Hormone therapy. 1 = Yes. 0 = No.
+* **size** : Tumor size (mm).
+* **grade** : Tumor grade (1-3).
+* **nodes** : Number of nodes.
+* **prog_recp** : Number of progesterone receptors.
+* **estrg_recp** : Number of estrogen receptors.
+* **rectime** : Time to recurrence (days).
+* **censrec** : Recurrence status. 1 = Recurrence. 0 = Censored.
+* **survtime** : Time to death (days).
+* **censdead** : Censoring status. 1 = Death. 0 = Censored.
+
+## Data Cleaning
+
+```{r Normalize/Scale Continuous variables}
+gbcs2$age <- scale(gbcs2$age)
+gbcs2$menopause <- gbcs2$menopause-1
+gbcs2$hormone <- gbcs2$hormone-1
+gbcs2$size <- scale(gbcs2$size)
+gbcs2$grade1 <- ifelse(gbcs2$grade==1, 1,0)
+gbcs2$grade2 <- ifelse(gbcs2$grade==2, 1,0)
+gbcs2$grade3 <- ifelse(gbcs2$grade==3, 1,0)
+gbcs2$grade <- NULL
+gbcs2$nodes <- scale(gbcs2$nodes)
+gbcs2$prog_recp <- scale(gbcs2$prog_recp)
+gbcs2$estrg_recp <- scale(gbcs2$estrg_recp)
+```
+
+We perform some preliminary operations of data cleaning on the dataset:
+* scale is generic function whose default method centers and/or scales the columns of a numeric matrix. We apply that to age, size, nodes, prog_recp and estrg_recp attributes.
+* create a boolean attribute for the grade of tumor (1, 2, 3) then set to null the original attribute
+* change values for boolean attributes menopause, hormone (just for convenience purposes).
+
+```{r Train/Test Split}
+set.seed(123)
+train_set = sample(nrow(gbcs2), 0.8 * nrow(gbcs2))
+#str(train_set)
+test_set = setdiff(seq_len(nrow(gbcs2)), train_set)
+
+## train/test set initialization and summary
+
+train_gbcs <- gbcs2[train_set, ]
+summarytools::dfSummary(train_gbcs, 
+                        graph.col = F, 
+                        valid.col = F
+)
+
+
+test_gbcs <- gbcs2[test_set, ]
+summarytools::dfSummary(test_gbcs, 
+                        graph.col = F, 
+                        valid.col = F
+)
+```
+
+**set.seed** is a function that permits to probabilistic/random processes such as estimation to be reproduced in a deterministic way. So for reproducibilty of the experiment and of our result we set it to a fixed integer value (123).
+**sample** function takes a sample of the specified size from the elements of gbcs2 without replacement (default).
+
+In the end we print 2 summaries of the characteristics of the train and test dataset.
+
+## Analysis
+
+### Cox Model
+
+```{r Fit the model}
+fit <- coxph(Surv(survtime, censdead) ~ age + menopause + hormone + size + grade1 + grade2 + nodes + prog_recp + estrg_recp, data = train_gbcs)
+summary(fit)
+
+check_PH <- cox.zph(fit, transform = "km")
+check_PH
+
+ND <- data.frame(age = 0, menopause = 1, hormone = 2,
+                 size = 0, grade1 = c(1,0,0), grade2=c(0,1,0), grade3=c(0,0,1), nodes = 0, prog_recp=0, estrg_recp=0)
+```
+
+```{r Fit survival function}
+surv_probs_Cox <- survfit(fit, newdata = ND)
+surv_probs_Cox
+
+summary(surv_probs_Cox, times = 500)
+
+plot(surv_probs_Cox, col = c("red", "blue", "green"),
+     xlab = "Follow-Up Time (days)", ylab = "Survival Probabilities")
+
+task_gbcs = TaskSurv$new(id = "train_gbcs", backend = train_gbcs, time = "survtime", event = "censdead")
+test_gbcs = TaskSurv$new(id = "test_gbcs", backend = test_gbcs, time = "survtime", event = "censdead")
+
+learner.cox = lrn("surv.coxph")
+learner.cox$train(task_gbcs)
+learner.cox$model
+
+prediction.cox = learner.cox$predict(test_gbcs)
+prediction.cox
+prediction.cox$score()
+
+measure = lapply(c("surv.graf"), msr)
+prediction.cox$score(measure)
+```
+
+
+### Support-Vector Machine
+
+```{r Linear Kernel}
+library("bbotk") 
+library("mlr3tuning")
+
+install_learners('surv.svm')
+svm <- lrn('surv.svm')
+
+svm$param_set$values = list(gamma.mu = 1, kernel = "lin_kernel", opt.meth = "ipop")
+svm$train(task_gbcs)
+svm$model
+```
+
+```{r SVM Prediction}
+svm.pred <- svm$predict(test_gbcs)
+svm.pred$score()
+```
+
+```{r Check the different Hyperparameter of the learner (Random Forest}
+svm$param_set
+```
+
+```{r Create a search space for tuning gamma}
+search_space = ps(gamma.mu = p_dbl(lower = 0.01, upper = 1))
+search_space
+```
+
+```{r}
+#Resampling Strategy
+hout = rsmp("holdout")
+#Performance measure (same used by professor)
+measure = msr("surv.cindex")
+#Termination Strategy: terminate after 20 iteration
+evals8 = trm("evals", n_evals = 8)
+
+instance = TuningInstanceSingleCrit$new(
+  task = task_gbcs,
+  learner = svm,
+  resampling = hout,
+  measure = measure,
+  search_space = search_space,
+  terminator = evals8
+)
+#Type of optimization
+tuner = tnr("grid_search", resolution = 10)
+```
+
+```{r Start the tuning}
+tuner$optimize(instance)
+```
+```{r Instance resul learners vala}
+print(instance$result_learner_param_vals)
+```
+
+```{r Best performance result}
+print(instance$result_y)
+```
+
+```{r Archive tuning}
+as.data.table(instance$archive)
+```
+
+```{r}
+#Setting the best parameters to the learner
+svm$param_set$values = instance$result_learner_param_vals
+#Retraining the learner
+svm$train(task_gbcs)
+```
+
+```{r Prediction Accuracy model}
+svm$model
+```
+
+```{r}
+svm.pred <- svm$predict(test_gbcs)
+svm.pred$score()
+```
+
+### Random Forest
+
+```{r}
+install.packages('ranger')
+library(ranger)
+library("mlr3verse")
+```
+
+```{r}
+rf <-lrn("surv.ranger")
+rf$train(task_gbcs)
+rf$oob_error()
+```
+
+```{r}
+rf$model
+rf.pred <- rf$predict(test_gbcs)
+rf.pred$score()
+```
+
+```{r Check the different Hyperparameter of the learner (Random Forest)}
+rf$param_set
+```
+
+```{r Create a search space for parameters min.node.size, mtry, sample.fraction}
+search_space = ps(
+  min.node.size = p_int(lower = 1, upper = 6),
+  mtry = p_int(lower = 2, upper = 10), 
+  sample.fraction = p_dbl(lower = 0.5, upper = 0.7)
+  )
+```
+
+```{r Resampling}
+search_space
+#Resampling Strategy
+hout = rsmp("cv", folds = 5)
+#Performance measure (same used by professor)
+measure = msr("surv.cindex")
+#Termination Strategy
+evalsTerm = trm("stagnation")
+```
+
+```{r}
+instance = TuningInstanceSingleCrit$new(
+  task = task_gbcs,
+  learner = rf,
+  resampling = hout,
+  measure = measure,
+  search_space = search_space,
+  terminator = evalsTerm
+)
+```
+
+```{r Tuning/Optimization}
+#Type of optimization
+tuner = tnr("grid_search", resolution = 5)
+#Start the tuning
+tuner$optimize(instance)
+```
+
+```{r Best parameters}
+instance$result_learner_param_vals
+```
+
+```{r Best performance}
+instance$result_y
+```
+
+```{r Archive of the tuning}
+as.data.table(instance$archive)
+```
+
+```{r Retrain with best hyperparameter}
+#Setting the best parameters to the learner 
+rf$param_set$values = instance$result_learner_param_vals
+#Retraining the learner
+rf$train(task_gbcs)
+```
+
+```{r Calculate Error}
+rf$oob_error()
+```
+```{r Prediction Accuracy}
+rf$model # (0.7244294) 
+```
+
+```{r}
+rf.pred <- rf$predict(test_gbcs)
+rf.pred$score()
+```
+
