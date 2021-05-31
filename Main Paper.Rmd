@@ -1,6 +1,7 @@
 ---
 title: "Personalized Healthcare Laboratory"
-output: html_notebook
+output:
+  html_notebook: default
 ---
 
 # Personalized Healthcare Laboratory
@@ -117,6 +118,211 @@ In the end we print 2 summaries of the characteristics of the train and test dat
 
 ## Analysis
 
+### Cox Model
+
+```{r Fit the model}
+fit <- coxph(Surv(survtime, censdead) ~ age + menopause + hormone + size + grade1 + grade2 + nodes + prog_recp + estrg_recp, data = train_gbcs)
+summary(fit)
+
+check_PH <- cox.zph(fit, transform = "km")
+check_PH
+
+ND <- data.frame(age = 0, menopause = 1, hormone = 2,
+                 size = 0, grade1 = c(1,0,0), grade2=c(0,1,0), grade3=c(0,0,1), nodes = 0, prog_recp=0, estrg_recp=0)
+```
+
+```{r Fit survival function}
+surv_probs_Cox <- survfit(fit, newdata = ND)
+surv_probs_Cox
+
+summary(surv_probs_Cox, times = 500)
+
+plot(surv_probs_Cox, col = c("red", "blue", "green"),
+     xlab = "Follow-Up Time (days)", ylab = "Survival Probabilities")
+
+task_gbcs = TaskSurv$new(id = "train_gbcs", backend = train_gbcs, time = "survtime", event = "censdead")
+test_gbcs = TaskSurv$new(id = "test_gbcs", backend = test_gbcs, time = "survtime", event = "censdead")
+
+learner.cox = lrn("surv.coxph")
+learner.cox$train(task_gbcs)
+learner.cox$model
+
+prediction.cox = learner.cox$predict(test_gbcs)
+prediction.cox
+prediction.cox$score()
+
+measure = lapply(c("surv.graf"), msr)
+prediction.cox$score(measure)
+```
+
+
 ### Support-Vector Machine
 
+```{r Linear Kernel}
+library("bbotk") 
+library("mlr3tuning")
+
+install_learners('surv.svm')
+svm <- lrn('surv.svm')
+
+svm$param_set$values = list(gamma.mu = 1, kernel = "lin_kernel", opt.meth = "ipop")
+svm$train(task_gbcs)
+svm$model
+```
+
+```{r SVM Prediction}
+svm.pred <- svm$predict(test_gbcs)
+svm.pred$score()
+```
+
+```{r Check the different Hyperparameter of the learner (Random Forest}
+svm$param_set
+```
+
+```{r Create a search space for tuning gamma}
+search_space = ps(gamma.mu = p_dbl(lower = 0.01, upper = 1))
+search_space
+```
+
+```{r}
+#Resampling Strategy
+hout = rsmp("holdout")
+#Performance measure (same used by professor)
+measure = msr("surv.cindex")
+#Termination Strategy: terminate after 20 iteration
+evals8 = trm("evals", n_evals = 8)
+
+instance = TuningInstanceSingleCrit$new(
+  task = task_gbcs,
+  learner = svm,
+  resampling = hout,
+  measure = measure,
+  search_space = search_space,
+  terminator = evals8
+)
+#Type of optimization
+tuner = tnr("grid_search", resolution = 10)
+```
+
+```{r Start the tuning}
+tuner$optimize(instance)
+```
+```{r Best parameters}
+instance$result_learner_param_vals
+```
+
+```{r Best performance}
+instance$result_y
+```
+
+```{r Archive of the tuning}
+as.data.table(instance$archive)
+```
+
+```{r}
+#Setting the best parameters to the learner
+svm$param_set$values = instance$result_learner_param_vals
+#Retraining the learner
+svm$train(task_gbcs)
+```
+
+```{r Prediction Accuracy}
+svm$model
+```
+
+```{r}
+svm.pred <- svm$predict(test_gbcs)
+svm.pred$score()
+```
+
+### Random Forest
+
+```{r}
+install.packages('ranger')
+library(ranger)
+library("mlr3verse")
+```
+
+```{r}
+rf <-lrn("surv.ranger")
+rf$train(task_gbcs)
+rf$oob_error()
+```
+
+```{r}
+rf$model
+rf.pred <- rf$predict(test_gbcs)
+rf.pred$score()
+```
+
+```{r Check the different Hyperparameter of the learner (Random Forest)}
+rf$param_set
+```
+
+```{r Create a search space for parameters min.node.size, mtry, sample.fraction}
+search_space = ps(
+  min.node.size = p_int(lower = 1, upper = 6),
+  mtry = p_int(lower = 2, upper = 10), 
+  sample.fraction = p_dbl(lower = 0.5, upper = 0.7)
+  )
+```
+
+```{r Resampling}
+search_space
+#Resampling Strategy
+hout = rsmp("cv", folds = 5)
+#Performance measure (same used by professor)
+measure = msr("surv.cindex")
+#Termination Strategy
+evalsTerm = trm("stagnation")
+```
+
+```{r}
+instance = TuningInstanceSingleCrit$new(
+  task = task_gbcs,
+  learner = rf,
+  resampling = hout,
+  measure = measure,
+  search_space = search_space,
+  terminator = evalsTerm
+)
+```
+
+```{r Tuning/Optimization}
+#Type of optimization
+tuner = tnr("grid_search", resolution = 5)
+#Start the tuning
+tuner$optimize(instance)
+```
+
+```{r Best parameters}
+instance$result_learner_param_vals
+```
+
+```{r Best performance}
+instance$result_y
+```
+
+```{r Archive of the tuning}
+as.data.table(instance$archive)
+```
+
+```{r Retrain with best hyperparameter}
+#Setting the best parameters to the learner 
+rf$param_set$values = instance$result_learner_param_vals
+#Retraining the learner
+rf$train(task_gbcs)
+```
+
+```{r Calculate Error}
+rf$oob_error()
+```
+```{r Prediction Accuracy}
+rf$model # (0.7244294) 
+```
+
+```{r}
+rf.pred <- rf$predict(test_gbcs)
+rf.pred$score()
+```
 
