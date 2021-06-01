@@ -1,9 +1,11 @@
 ---
 title: "Personalized Healthcare Laboratory"
 output:
-  pdf_document: default
+  html_document:
+    df_print: paged
   html_notebook: default
   word_document: default
+  pdf_document: default
 ---
 
 # Personalized Healthcare Laboratory
@@ -24,6 +26,7 @@ This function is a wrapper for library and require. It checks to see if a packag
 Then we install the required packages and import into environvment.
 
 ```{r Install required packages and import into environvment}
+library(remotes)
 install_github("binderh/CoxBoost")
 install.packages("mlr3verse")
 remotes::install_github("mlr-org/mlr3extralearners")
@@ -172,26 +175,41 @@ svm$train(task_gbcs)
 svm$model
 ```
 
+At the heart of mlr3tuning are the R6 classes:
+* **TuningInstanceSingleCrit, TuningInstanceMultiCrit **: These two classes describe the tuning problem and store the results.
+* **Tuner**: This class is the base class for implementations of tuning algorithms.
+
 ```{r SVM Prediction}
 svm.pred <- svm$predict(test_gbcs)
 svm.pred$score()
 ```
 
+We use the SVM algorithm from rpart and choose a subset of the hyperparameters we want to tune. This is often referred to as the **“tuning space.”**
+
 ```{r Check the different Hyperparameter of the learner (Random Forest}
 svm$param_set
 ```
+Here, we opt to tune parameter **gamma.mu** as a double value (x.xx) in the set 0.01 and 1.
 
 ```{r Create a search space for tuning gamma}
 search_space = ps(gamma.mu = p_dbl(lower = 0.01, upper = 1))
 search_space
 ```
 
-```{r}
-#Resampling Strategy
+Next, we need to specify how to evaluate the performance. For this, we need to choose a resampling strategy
+
+```{r Resampling Strategy}
 hout = rsmp("holdout")
-#Performance measure (same used by professor)
+```
+and the performance measure
+
+```{r Performance measure}
 measure = msr("surv.cindex")
-#Termination Strategy: terminate after 20 iteration
+```
+
+Finally, one has to select the budget available, to solve this tuning instance. This is done by selecting one of the available Terminators. We decided to set : terminate after 8 iteration to same computational costs with respect to a potential gain in performance.
+
+```{r Termination}
 evals8 = trm("evals", n_evals = 8)
 
 instance = TuningInstanceSingleCrit$new(
@@ -206,31 +224,42 @@ instance = TuningInstanceSingleCrit$new(
 tuner = tnr("grid_search", resolution = 10)
 ```
 
+Through the Tuner R6 class we trigger the tuner. To start the tuning, we simply pass the TuningInstanceSingleCrit to the $optimize() method of the initialized Tuner. The tuner proceeds as follows
+
 ```{r Start the tuning}
 tuner$optimize(instance)
 ```
 ```{r Instance resul learners vala}
 print(instance$result_learner_param_vals)
 ```
+We obtain the best performanc e result
 
 ```{r Best performance result}
 print(instance$result_y)
 ```
+However, one can investigate all resamplings which were undertaken, as they are stored in the archive of the TuningInstanceSingleCrit and can be accessed by using as.data.table() 
 
 ```{r Archive tuning}
 as.data.table(instance$archive)
 ```
+Now the optimized hyperparameters can take the previously created Learner, set the returned hyperparameters and train it on the full dataset (follows).
 
-```{r}
-#Setting the best parameters to the learner
+```{r Setting the best parameters to the learner}
 svm$param_set$values = instance$result_learner_param_vals
-#Retraining the learner
+```
+```{r Retraining the learner}
 svm$train(task_gbcs)
 ```
+
+The trained model can now be used to make a prediction on external data. Note that predicting on observations present in the task, should be avoided. The model has seen these observations already during tuning and therefore results would be statistically biased. Hence, the resulting performance measure would be over-optimistic. Instead, to get statistically unbiased performance estimates for the current task, nested resampling is required.
+
+Then we train the model so we can use the learner like any other learner, calling the \$train() 
 
 ```{r Prediction Accuracy model}
 svm$model
 ```
+
+and the \$predict() method.
 
 ```{r}
 svm.pred <- svm$predict(test_gbcs)
@@ -245,13 +274,13 @@ library(ranger)
 library("mlr3verse")
 ```
 
-```{r}
+```{r Error of learner}
 rf <-lrn("surv.ranger")
 rf$train(task_gbcs)
 rf$oob_error()
 ```
 
-```{r}
+```{r Score of model}
 rf$model
 rf.pred <- rf$predict(test_gbcs)
 rf.pred$score()
@@ -267,17 +296,25 @@ search_space = ps(
   mtry = p_int(lower = 2, upper = 10), 
   sample.fraction = p_dbl(lower = 0.5, upper = 0.7)
   )
+
+search_space
 ```
 
+We use as ressampling strategy a cross validation with 5 folds
+
 ```{r Resampling}
-search_space
-#Resampling Strategy
 hout = rsmp("cv", folds = 5)
-#Performance measure (same used by professor)
+```
+
+```{r Performance}
 measure = msr("surv.cindex")
-#Termination Strategy
+```
+
+
+```{r Termination Strategy}
 evalsTerm = trm("stagnation")
 ```
+
 
 ```{r}
 instance = TuningInstanceSingleCrit$new(
@@ -323,7 +360,7 @@ rf$oob_error()
 rf$model # (0.7244294) 
 ```
 
-```{r}
+```{r Prediction Score}
 rf.pred <- rf$predict(test_gbcs)
 rf.pred$score()
 ```
