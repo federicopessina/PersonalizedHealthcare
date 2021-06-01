@@ -55,7 +55,7 @@ summarytools::dfSummary(gbcs2,
 
 head(gbcs) # print example
 ```
-The dataset has the followuing attributes:
+The dataset has the following attributes:
 * **id** : Identification Code
 * **diagdate** : Date of diagnosis.
 * **recdate** : Date of recurrence free survival.
@@ -116,7 +116,7 @@ summarytools::dfSummary(test_gbcs,
 )
 ```
 
-**set.seed** is a function that permits to probabilistic/random processes such as estimation to be reproduced in a deterministic way. So for reproducibilty of the experiment and of our result we set it to a fixed integer value (123).
+**set.seed** is a function that permits to probabilistic/random processes such as estimation to be reproduced in a deterministic way. So for reproducibility of the experiment and of our result we set it to a fixed integer value (123).
 **sample** function takes a sample of the specified size from the elements of gbcs2 without replacement (default).
 
 In the end we print 2 summaries of the characteristics of the train and test dataset.
@@ -232,7 +232,7 @@ tuner$optimize(instance)
 ```{r Instance resul learners vala}
 print(instance$result_learner_param_vals)
 ```
-We obtain the best performanc e result
+We obtain the best performance result
 
 ```{r Best performance result}
 print(instance$result_y)
@@ -300,7 +300,7 @@ search_space = ps(
 search_space
 ```
 
-We use as ressampling strategy a cross validation with 5 folds
+We use as resampling strategy a cross validation with 5 folds
 
 ```{r Resampling}
 hout = rsmp("cv", folds = 5)
